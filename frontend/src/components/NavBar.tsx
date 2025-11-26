@@ -8,7 +8,7 @@ export default function NavBar({
   setAccountType: (value: "student" | "faculty" | null) => void;
 }) {
   return (
-    <nav className="w-full px-8 py-2 bg-secondary border-b border-gray-200">
+    <nav className="w-full px-8 py-2 bg-secondary border-b border-slate-900">
       <div className="w-full flex items-center justify-between">
         <span className="text-xl font-extrabold cursor-pointer hover:underline hover:text-primary">
           Shiz University
