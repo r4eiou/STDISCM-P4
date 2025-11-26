@@ -1,34 +1,38 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Button } from "./components/ui/button";
+import NavBar from "./components/NavBar";
+import AccountForm from "./components/AccountForm";
 
 function App() {
-  const [count, setCount] = useState(0);
-
+  const [accountType, setAccountType] = useState<"student" | "faculty" | null>(
+    null
+  );
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <Button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </Button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <NavBar accountType={accountType} setAccountType={setAccountType} />
+      <section className=" w-full flex flex-row items-center justify-center h-full justify-around">
+        {!accountType && (
+          <>
+            <section className="relative flex flex-col items-center justify-center w-3/5  h-full">
+              <div className="absolute inset-0 bg-[url(/public/images/pexels-polina-zimmerman-3747505.jpg)] bg-cover bg-center brightness-60 -z-10" />
+
+              <span className="font-bold text-5xl text-white drop-shadow-lg">
+                Welcome to Shiz University!
+              </span>
+            </section>
+            <section className="flex flex-col items-center justify-center w-2/5 bg-primary h-full">
+              <AccountForm setAccountType={setAccountType} />
+            </section>
+          </>
+        )}
+        {accountType && (
+          <section>
+            <span className="font-bold text-3xl">
+              You are logged in as a {accountType}.
+            </span>
+          </section>
+        )}
+      </section>
     </>
   );
 }
