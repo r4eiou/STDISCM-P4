@@ -5,6 +5,7 @@ import { useAccount } from "@/AccountContext";
 import { useEffect } from "react";
 import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
+import EnrollCourses from "./EnrollCourses";
 
 export default function Dashboard() {
   const { accountType } = useAccount();
@@ -79,6 +80,7 @@ export default function Dashboard() {
         )}
 
         {selectedFeature === "viewCourses" && <ViewCourses />}
+        {selectedFeature === "enrollCourses" && <EnrollCourses />}
       </Container>
     </>
   );

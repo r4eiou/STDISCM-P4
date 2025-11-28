@@ -10,6 +10,8 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 
+import { Button } from "./ui/button";
+
 interface CourseCardProps {
   courseId: number;
   courseName: string;
@@ -18,6 +20,7 @@ interface CourseCardProps {
   desc: string;
   instructor: string;
   section: number;
+  variant: "view" | "enroll";
 }
 
 export default function CourseCard({
@@ -28,6 +31,7 @@ export default function CourseCard({
   desc,
   instructor,
   section,
+  variant,
 }: CourseCardProps) {
   return (
     <Card className="w-1/2 m-3">
@@ -36,13 +40,30 @@ export default function CourseCard({
           {courseId} | {courseName}
         </CardTitle>
         <CardAction className="text-sm ">
-          {!(remSlots === maxSlots) ? (
-            <Badge variant="default">
-              {remSlots} / {maxSlots}
-            </Badge>
-          ) : (
-            <Badge variant="secondary">FULL</Badge>
-          )}
+          {variant === "view" &&
+            (!(remSlots === maxSlots) ? (
+              <Badge variant="default">
+                {remSlots} / {maxSlots}
+              </Badge>
+            ) : (
+              <Badge variant="secondary">FULL</Badge>
+            ))}
+
+          {variant === "enroll" &&
+            (!(remSlots === maxSlots) ? (
+              <>
+                <div className="flex gap-2">
+                  <Badge variant="default">
+                    {remSlots} / {maxSlots}
+                  </Badge>
+                  <Button className="hover:scale-110 ease-in-out transition-transform">
+                    Enroll
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <Badge variant="secondary">FULL</Badge>
+            ))}
         </CardAction>
       </CardHeader>
       <CardContent className="text-start">

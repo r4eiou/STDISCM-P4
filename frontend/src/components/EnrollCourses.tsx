@@ -12,13 +12,13 @@ export default function ViewCourses() {
         desc={course.description}
         instructor={course.instructor}
         section={course.sectionNumber}
-        variant="view"
+        variant="enroll"
       />
     );
   });
   return (
     <>
-      <span className="text-2xl m-4 font-bold">View Courses</span>
+      <span className="text-2xl m-4 font-bold">Enroll Courses</span>
       {courseCards}
     </>
   );
