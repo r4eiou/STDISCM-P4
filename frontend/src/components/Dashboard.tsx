@@ -2,24 +2,40 @@ import Container from "./Container";
 
 import { useState } from "react";
 import { useAccount } from "@/AccountContext";
+import { useEffect } from "react";
 
 import FeatureCard from "./FeatureCard";
 
 export default function Dashboard() {
   const { accountType } = useAccount();
+  const [back, setBack] = useState<boolean>(false);
 
-  const [selectedFeature, setSelectedFeature] = useState<
+  type FeatureType =
     | "viewCourses"
     | "viewGrades"
     | "uploadGrades"
-    | "viewGrades"
     | "enrollCourses"
-    | null
-  >(null);
+    | null;
+
+  const [selectedFeature, setSelectedFeature] = useState<FeatureType>(null);
+
+  const handleClickFeature = (selectedFeature: FeatureType) => {
+    setSelectedFeature(selectedFeature);
+    setBack(true);
+  };
+
+  useEffect(() => {
+    if (!selectedFeature) {
+      setBack(false);
+    }
+  }, [selectedFeature]);
 
   return (
     <>
-      <Container withGoBack={true}>
+      <Container
+        withGoBack={back}
+        onGoBack={selectedFeature ? () => setSelectedFeature(null) : undefined}
+      >
         <span className="font-bold text-base">
           {/* sample text for debugging only */}
           You are logged in as a {accountType}. You selected {selectedFeature}
@@ -36,19 +52,19 @@ export default function Dashboard() {
               <FeatureCard
                 cardText="View Courses"
                 imageUrl="/images/dom-fou-YRMWVcdyhmI-unsplash.jpg"
-                onClick={() => setSelectedFeature("viewCourses")}
-              ></FeatureCard>
+                onClick={() => handleClickFeature("viewCourses")}
+              />
               {accountType === "student" && (
                 <>
                   <FeatureCard
                     cardText="View Grades"
                     imageUrl="/images/christian-medina-tBr9CPIArGQ-unsplash.jpg"
-                    onClick={() => setSelectedFeature("viewGrades")}
+                    onClick={() => handleClickFeature("viewGrades")}
                   ></FeatureCard>
                   <FeatureCard
                     cardText="Enroll Courses"
                     imageUrl="/images/kvalifik-5Q07sS54D0Q-unsplash.jpg"
-                    onClick={() => setSelectedFeature("enrollCourses")}
+                    onClick={() => handleClickFeature("enrollCourses")}
                   ></FeatureCard>
                 </>
               )}
@@ -57,7 +73,7 @@ export default function Dashboard() {
                   <FeatureCard
                     cardText="Upload Grades"
                     imageUrl="/images/priscilla-du-preez-OEdkPaxYMXU-unsplash.jpg"
-                    onClick={() => setSelectedFeature("uploadGrades")}
+                    onClick={() => handleClickFeature("uploadGrades")}
                   ></FeatureCard>
                 </>
               )}

@@ -1,6 +1,4 @@
-import { useState } from "react";
 import "./App.css";
-import NavBar from "./components/NavBar";
 import AccountForm from "./components/AccountForm";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Dashboard from "./components/Dashboard";
@@ -12,7 +10,6 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <NavBar accountType={accountType} setAccountType={setAccountType} />
       <section className=" w-full flex flex-row items-center justify-center h-full justify-around">
         {!accountType && (
           <>
