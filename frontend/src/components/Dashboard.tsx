@@ -3,7 +3,7 @@ import Container from "./Container";
 import { useState } from "react";
 import { useAccount } from "@/AccountContext";
 import { useEffect } from "react";
-
+import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
 
 export default function Dashboard() {
@@ -30,17 +30,14 @@ export default function Dashboard() {
     }
   }, [selectedFeature]);
 
+  console.log({ accountType, selectedFeature });
+
   return (
     <>
       <Container
         withGoBack={back}
         onGoBack={selectedFeature ? () => setSelectedFeature(null) : undefined}
       >
-        <span className="font-bold text-base">
-          {/* sample text for debugging only */}
-          You are logged in as a {accountType}. You selected {selectedFeature}
-        </span>
-
         {!selectedFeature && (
           <div className="bg-muted text-foreground w-4/5 h-fit flex p-8 rounded-xl flex-start flex-col gap-4 overflow-hidden">
             <span className="text-2xl">
@@ -80,6 +77,8 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {selectedFeature === "viewCourses" && <ViewCourses />}
       </Container>
     </>
   );
