@@ -2,7 +2,7 @@
 Distributed Fault Tolerance
 
 To run frontend:
-`cd frontend`
+`cd frontend\`
 `npm run dev`
 
 Then open localhost link
