@@ -10,7 +10,7 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <section className=" w-full flex flex-row items-center justify-center h-full justify-around">
+      <section className=" w-full flex flex-row items-center justify-center h-full">
         {!accountType && (
           <>
             <section className="relative flex flex-col items-center justify-center w-3/5  h-full">
