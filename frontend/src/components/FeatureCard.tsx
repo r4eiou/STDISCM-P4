@@ -1,14 +1,16 @@
 import { Card, CardTitle } from "./ui/card";
 
+interface FeatureCardProps {
+  cardText: string;
+  imageUrl: string;
+  onClick?: () => void;
+}
+
 export default function FeatureCard({
   cardText,
   imageUrl,
   onClick,
-}: {
-  cardText: string;
-  imageUrl: string;
-  onClick?: () => void;
-}) {
+}: FeatureCardProps) {
   return (
     <Card
       onClick={onClick}

@@ -5,10 +5,11 @@ import AccountForm from "./components/AccountForm";
 import { ThemeProvider } from "./components/ThemeProvider";
 import Dashboard from "./components/Dashboard";
 
+import { useAccount } from "@/AccountContext";
+
 function App() {
-  const [accountType, setAccountType] = useState<"student" | "faculty" | null>(
-    null
-  );
+  const { accountType, setAccountType } = useAccount();
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <NavBar accountType={accountType} setAccountType={setAccountType} />
@@ -27,7 +28,7 @@ function App() {
             </section>
           </>
         )}
-        {accountType && <Dashboard accountType={accountType} />}
+        {accountType && <Dashboard />}
       </section>
     </ThemeProvider>
   );

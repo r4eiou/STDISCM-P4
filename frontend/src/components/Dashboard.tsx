@@ -1,14 +1,13 @@
 import Container from "./Container";
 
 import { useState } from "react";
+import { useAccount } from "@/AccountContext";
 
 import FeatureCard from "./FeatureCard";
 
-export default function Dashboard({
-  accountType,
-}: {
-  accountType: "student" | "faculty";
-}) {
+export default function Dashboard() {
+  const { accountType } = useAccount();
+
   const [selectedFeature, setSelectedFeature] = useState<
     | "viewCourses"
     | "viewGrades"
