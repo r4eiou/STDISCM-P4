@@ -6,7 +6,8 @@ import Dashboard from "./components/Dashboard";
 import { useAccount } from "@/AccountContext";
 
 function App() {
-  const { accountType, setAccountType } = useAccount();
+  const { setAccountData, firstName, lastName, accountType, setAccountType } =
+    useAccount();
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
