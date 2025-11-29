@@ -67,7 +67,7 @@ export default function ViewGrades() {
     <>
       <span className="text-2xl m-2 font-bold">View Grades</span>
       <div className="container mx-auto">
-        <GradesTable columns={columns} data={gradesData} />
+        <GradesTable columns={columns} data={gradesData} variant="view" />
       </div>
     </>
   );
