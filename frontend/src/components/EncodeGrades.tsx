@@ -5,20 +5,13 @@ import { useMemo } from "react";
 import { useAccount } from "@/AccountContext.tsx";
 import { generateAllData } from "@/data/sampleData";
 import { type StudentGrade } from "../lib/grades/getColumnsForAccountType.tsx";
+import { toast } from "sonner";
 
 export default function UploadGrades() {
   const [loading, setLoading] = useState(false);
   const { accountType, accountId } = useAccount();
   const [grades, setGrades] = useState<Record<string, string>>({});
-
-  const handleSubmitGrade = (
-    studentId: number,
-    courseCode: string,
-    grade: string
-  ) => {
-    console.log("Submitting grade:", { studentId, courseCode, grade });
-    // Handle grade submission here
-  };
+  const [gradesData, setGradesData] = useState<StudentGrade[]>([]);
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -31,20 +24,18 @@ export default function UploadGrades() {
   //   fetchData();
   // }, []);
 
-  const gradesData = useMemo(() => {
-    // Generate all sample data
+  useEffect(() => {
     const { students, grades, courses } = generateAllData();
 
-    // Filter grades based on account type
     const filteredGrades = (() => {
-      if (accountType === "faculty" && accountId) {
-        // Faculty see all grades for their courses
+      if (accountType === "student" && accountId) {
+        return grades.filter((grade) => grade.student_id === accountId);
+      } else if (accountType === "faculty" && accountId) {
         return grades.filter((grade) => grade.faculty_id === accountId);
       }
       return grades;
     })();
 
-    // Enhance grades with student and course info
     const enhancedGrades: StudentGrade[] = filteredGrades.map((grade) => {
       const student = students.find((s) => s.student_id === grade.student_id);
       const course = courses.find((c) => c.course_code === grade.course_code);
@@ -58,8 +49,36 @@ export default function UploadGrades() {
       };
     });
 
-    return enhancedGrades;
+    setGradesData(enhancedGrades);
   }, [accountType, accountId]);
+
+  const handleSubmitGrade = (
+    studentId: number,
+    courseCode: string,
+    grade: string
+  ) => {
+    setGradesData((prev) =>
+      prev.map((item) =>
+        item.student_id === studentId && item.course_code === courseCode
+          ? { ...item, grade: parseFloat(grade) }
+          : item
+      )
+    );
+
+    // Clear previous selection
+    setGrades((prev) => {
+      const newGrades = { ...prev };
+      delete newGrades[`${studentId}-${courseCode}`];
+      return newGrades;
+    });
+
+    toast("Grade updated successfully", {
+      description: `Grade ${grade} has been recorded for student ${studentId} in ${courseCode}.`,
+      duration: 3000,
+    });
+
+    // API call here
+  };
 
   const columns = useMemo(
     () =>
