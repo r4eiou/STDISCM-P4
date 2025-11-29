@@ -13,7 +13,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ import {
 interface GradesTableProps<TData, TValue, variant> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  variant: "view" | "upload";
+  variant: "view" | "encode";
 }
 
 export default function GradesTable<TData, TValue, variant>({
@@ -213,9 +213,9 @@ export default function GradesTable<TData, TValue, variant>({
           </div>
         </div>
       )}
-      {variant === "upload" && (
+      {variant === "encode" && (
         <div className="w-full flex flex-col items-center">
-          <div className="flex items-center py-4 w-2/3">
+          <div className="flex items-center py-4 w-4/5">
             <Input
               placeholder="Filter by student name..."
               value={
@@ -256,7 +256,7 @@ export default function GradesTable<TData, TValue, variant>({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="overflow-hidden rounded-md border w-2/3">
+          <div className="overflow-hidden rounded-md border w-4/5">
             <Table>
               <TableHeader className="bg-primary">
                 {table.getHeaderGroups().map((headerGroup) => (

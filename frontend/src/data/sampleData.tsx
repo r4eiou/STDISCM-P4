@@ -42,7 +42,7 @@ export interface Grade {
   faculty_id: number;
   course_code: string;
   section: string;
-  grade: number;
+  grade: number | null;
 }
 
 // Sample data generators
@@ -185,21 +185,21 @@ export const generateFaculty = (): Faculty[] => {
       email: "faculty101@shiz.edu",
       password: "password123",
       firstname: "John",
-      lastname: "Professor",
+      lastname: "Torres",
     },
     {
       faculty_id: 102,
       email: "faculty102@shiz.edu",
       password: "password123",
       firstname: "Jane",
-      lastname: "Teacher",
+      lastname: "Roberts",
     },
     {
       faculty_id: 103,
       email: "faculty103@shiz.edu",
       password: "password123",
       firstname: "Bob",
-      lastname: "Instructor",
+      lastname: "Gonzales",
     },
   ];
 };
@@ -371,9 +371,11 @@ export const generateEnrollments = (students: Student[]): Enrollment[] => {
 };
 
 export const generateGrades = (enrollments: Enrollment[]): Grade[] => {
+  const possibleGrades = [null, 0.0, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0];
+
   return enrollments.map((enrollment) => ({
     ...enrollment,
-    grade: Math.floor(Math.random() * 41) + 60, // Random grade 60-100
+    grade: possibleGrades[Math.floor(Math.random() * possibleGrades.length)],
   }));
 };
 

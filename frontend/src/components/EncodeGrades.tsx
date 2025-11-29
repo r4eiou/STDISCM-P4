@@ -9,6 +9,16 @@ import { type StudentGrade } from "../lib/grades/getColumnsForAccountType.tsx";
 export default function UploadGrades() {
   const [loading, setLoading] = useState(false);
   const { accountType, accountId } = useAccount();
+  const [grades, setGrades] = useState<Record<string, string>>({});
+
+  const handleSubmitGrade = (
+    studentId: number,
+    courseCode: string,
+    grade: string
+  ) => {
+    console.log("Submitting grade:", { studentId, courseCode, grade });
+    // Handle grade submission here
+  };
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -27,13 +37,7 @@ export default function UploadGrades() {
 
     // Filter grades based on account type
     const filteredGrades = (() => {
-      if (accountType === "student" && accountId) {
-        // Students see only their own grades
-        const filteredStudentGrades = grades.filter(
-          (grade) => grade.student_id === accountId
-        );
-        return filteredStudentGrades;
-      } else if (accountType === "faculty" && accountId) {
+      if (accountType === "faculty" && accountId) {
         // Faculty see all grades for their courses
         return grades.filter((grade) => grade.faculty_id === accountId);
       }
@@ -57,7 +61,16 @@ export default function UploadGrades() {
     return enhancedGrades;
   }, [accountType, accountId]);
 
-  const columns = getColumnsForAccountType(accountType || "student");
+  const columns = useMemo(
+    () =>
+      getColumnsForAccountType(
+        accountType,
+        grades,
+        setGrades,
+        handleSubmitGrade
+      ),
+    [accountType, grades]
+  );
 
   if (loading) {
     return (
@@ -67,9 +80,9 @@ export default function UploadGrades() {
 
   return (
     <>
-      <span className="text-2xl m-2 font-bold">View Grades</span>
+      <span className="text-2xl m-2 font-bold">Encode Grades</span>
       <div className="container mx-auto">
-        <GradesTable columns={columns} data={gradesData} variant="view" />
+        <GradesTable columns={columns} data={gradesData} variant="encode" />
       </div>
     </>
   );

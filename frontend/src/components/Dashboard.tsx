@@ -7,7 +7,7 @@ import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
 import EnrollCourses from "./EnrollCourses";
 import ViewGrades from "./ViewGrades";
-import UploadGrades from "./UploadGrades";
+import UploadGrades from "./EncodeGrades";
 
 export default function Dashboard() {
   const { firstName, accountType } = useAccount();
