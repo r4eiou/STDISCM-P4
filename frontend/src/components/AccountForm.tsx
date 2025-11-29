@@ -66,7 +66,7 @@ export default function AccountForm() {
           console.log("Student logged in:", student);
         } else {
           setError("root", {
-            message: "Invalid email or password for student account.",
+            message: "Invalid email or password.",
           });
         }
       } else if (data.accountType === "faculty") {
@@ -85,7 +85,7 @@ export default function AccountForm() {
           console.log("Faculty logged in:", facultyMember);
         } else {
           setError("root", {
-            message: "Invalid email or password for faculty account.",
+            message: "Invalid email or password.",
           });
         }
       }
