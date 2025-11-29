@@ -22,7 +22,7 @@ function App() {
               </span>
             </section>
             <section className="flex flex-col items-center justify-center w-2/5 bg-primary h-full">
-              <AccountForm setAccountType={setAccountType} />
+              <AccountForm />
             </section>
           </>
         )}

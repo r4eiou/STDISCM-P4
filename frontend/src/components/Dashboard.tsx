@@ -7,9 +7,10 @@ import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
 import EnrollCourses from "./EnrollCourses";
 import ViewGrades from "./ViewGrades";
+import UploadGrades from "./UploadGrades";
 
 export default function Dashboard() {
-  const { firstName, lastName, accountType } = useAccount();
+  const { firstName, accountType } = useAccount();
   const [back, setBack] = useState<boolean>(false);
 
   type FeatureType =
@@ -83,6 +84,7 @@ export default function Dashboard() {
         {selectedFeature === "viewCourses" && <ViewCourses />}
         {selectedFeature === "enrollCourses" && <EnrollCourses />}
         {selectedFeature === "viewGrades" && <ViewGrades />}
+        {selectedFeature === "uploadGrades" && <UploadGrades />}
       </Container>
     </>
   );

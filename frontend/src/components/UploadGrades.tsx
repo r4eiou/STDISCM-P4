@@ -6,7 +6,7 @@ import { useAccount } from "@/AccountContext.tsx";
 import { generateAllData } from "@/data/sampleData";
 import { type StudentGrade } from "../lib/grades/getColumnsForAccountType.tsx";
 
-export default function ViewGrades() {
+export default function UploadGrades() {
   const [loading, setLoading] = useState(false);
   const { accountType, accountId } = useAccount();
 
