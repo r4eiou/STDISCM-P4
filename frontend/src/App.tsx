@@ -6,7 +6,8 @@ import Dashboard from "./components/Dashboard";
 import { useAccount } from "@/AccountContext";
 
 function App() {
-  const { accountType, setAccountType } = useAccount();
+  const { setAccountData, firstName, lastName, accountType, setAccountType } =
+    useAccount();
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -21,7 +22,7 @@ function App() {
               </span>
             </section>
             <section className="flex flex-col items-center justify-center w-2/5 bg-primary h-full">
-              <AccountForm setAccountType={setAccountType} />
+              <AccountForm />
             </section>
           </>
         )}

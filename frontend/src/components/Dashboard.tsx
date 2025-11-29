@@ -6,9 +6,11 @@ import { useEffect } from "react";
 import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
 import EnrollCourses from "./EnrollCourses";
+import ViewGrades from "./ViewGrades";
+import UploadGrades from "./UploadGrades";
 
 export default function Dashboard() {
-  const { accountType } = useAccount();
+  const { firstName, accountType } = useAccount();
   const [back, setBack] = useState<boolean>(false);
 
   type FeatureType =
@@ -43,7 +45,7 @@ export default function Dashboard() {
           <div className="bg-muted text-foreground w-4/5 h-fit flex p-8 rounded-xl flex-start flex-col gap-4 overflow-hidden">
             <span className="text-2xl">
               Welcome back,
-              <span className="font-extrabold"> Account Name</span>.
+              <span className="font-extrabold"> {firstName}</span>.
             </span>
             <span>Please choose an action below.</span>
             <div className="mt-10 flex w-full h-full gap-6 justify-around items-stretch">
@@ -81,6 +83,8 @@ export default function Dashboard() {
 
         {selectedFeature === "viewCourses" && <ViewCourses />}
         {selectedFeature === "enrollCourses" && <EnrollCourses />}
+        {selectedFeature === "viewGrades" && <ViewGrades />}
+        {selectedFeature === "uploadGrades" && <UploadGrades />}
       </Container>
     </>
   );
