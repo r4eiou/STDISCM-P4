@@ -13,7 +13,7 @@ export default function Container({
     <div className="w-full h-full flex flex-col mt-10">
       <div className="w-full h-full flex flex-col items-start">
         {withGoBack && (
-          <Button variant="link" className="mb-4 ms-4" onClick={onGoBack}>
+          <Button variant="link" className="ms-4" onClick={onGoBack}>
             ← Go Back
           </Button>
         )}
