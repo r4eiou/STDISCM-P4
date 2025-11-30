@@ -7,7 +7,7 @@ import { generateAllData } from "@/data/sampleData";
 import { type StudentGrade } from "../lib/grades/getColumnsForAccountType.tsx";
 import { toast } from "sonner";
 
-export default function UploadGrades() {
+export default function EncodeGrades() {
   const [loading, setLoading] = useState(false);
   const { accountType, accountId } = useAccount();
   const [grades, setGrades] = useState<Record<string, string>>({});

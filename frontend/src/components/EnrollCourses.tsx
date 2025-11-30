@@ -1,7 +1,7 @@
 import CourseCard from "./CourseCard";
 import courseData from "../lib/courseData.ts";
 
-export default function ViewCourses() {
+export default function EnrollCourses() {
   const courseCards = courseData.map((course) => {
     return (
       <CourseCard
@@ -12,6 +12,7 @@ export default function ViewCourses() {
         desc={course.description}
         instructor={course.instructor}
         section={course.sectionNumber}
+        time="MH 730-9" // sample only, if enroll input offerings.time, if view leave as null
         variant="enroll"
       />
     );
