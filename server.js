@@ -9,13 +9,17 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 
-// gRPC client
+// LOGIN gRPC client
 const packageDef = protoLoader.loadSync("./login/proto/login.proto");
 const grpcObj = grpc.loadPackageDefinition(packageDef);
 const LoginClient = grpcObj.login.LoginService;
 
-const client = new LoginClient("localhost:5001", grpc.credentials.createInsecure());
+const client = new LoginClient(
+  "localhost:5001", 
+  grpc.credentials.createInsecure()
+);
 
+// login endpoint
 app.post('/login', (req, res) => {
   const { email, password, accountType } = req.body;
 
@@ -38,4 +42,23 @@ app.post('/login', (req, res) => {
   });
 });
 
+// VIEW COURSES gRPC client
+const coursesPackageDef = protoLoader.loadSync("./courses/proto/view_course.proto");
+const coursesGrpcObj = grpc.loadPackageDefinition(coursesPackageDef);
+const ViewCoursesClient = coursesGrpcObj.view_courses.ViewCoursesService;
+
+const viewCoursesClient = new ViewCoursesClient(
+  "localhost:5002",
+  grpc.credentials.createInsecure()
+);
+
+// View courses endpoint
+app.get('/view-courses', (req, res) => {
+  viewCoursesClient.GetCourses({}, (err, response) => {
+    if (err) return res.status(500).json({ error: 'gRPC error' });
+    return res.json(response.courses); // only send array of courses
+  });
+});
+
+// Start API Gateway
 app.listen(4000, () => console.log("API Gateway running on port 4000"));

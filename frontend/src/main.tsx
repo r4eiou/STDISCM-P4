@@ -21,9 +21,11 @@ const router = createBrowserRouter([
       { path: "/view-grades", element: <ViewGrades /> },
       { path: "/enroll-courses", element: <EnrollCourses /> },
       { path: "/encode-grades", element: <EncodeGrades /> },
+
     ],
   },
 ]);
+
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
