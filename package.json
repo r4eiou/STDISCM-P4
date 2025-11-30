@@ -1,5 +1,5 @@
 {
-  "type" : "module",
+  "type": "module",
   "dependencies": {
     "@grpc/grpc-js": "^1.14.1",
     "@supabase/supabase-js": "^2.86.0",

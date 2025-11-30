@@ -57,40 +57,20 @@ export default function AccountForm() {
       const result = await res.json();
       console.log('Response JSON:', result);
 
-        if (student) {
-          setAccountData({
-            type: "student",
-            id: student.student_id,
-            firstName: student.firstname,
-            lastName: student.lastname,
-          });
-          console.log("Student logged in:", student);
-          navigate("/dashboard");
-        } else {
-          setError("root", {
-            message: "Invalid email or password.",
-          });
-        }
-      } else if (data.accountType === "faculty") {
-        // Find faculty by email and password
-        const facultyMember = faculty.find(
-          (f) => f.email === data.email && f.password === data.password
-        );
+      if (res.ok) {
+        console.log('token:', result.token);
+        localStorage.setItem('token', result.token);
+        setAccountType(data.accountType);
+        setAccountData({
+          type: result.user.accountType,
+          id: result.user.id,
+          firstName: result.user.firstName,
+          lastName: result.user.lastName,
+        });
 
-        if (facultyMember) {
-          setAccountData({
-            type: "faculty",
-            id: facultyMember.faculty_id,
-            firstName: facultyMember.firstname,
-            lastName: facultyMember.lastname,
-          });
-          console.log("Faculty logged in:", facultyMember);
-          navigate("/dashboard");
-        } else {
-          setError("root", {
-            message: "Invalid email or password.",
-          });
-        }
+        navigate("/dashboard");
+      } else {
+        setError('root', { message: result.error });
       }
     } catch (err) {
       console.error('Fetch error:', err);

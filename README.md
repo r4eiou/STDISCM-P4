@@ -6,3 +6,5 @@ To run frontend:
 <br>`npm run dev`
 
 Then open localhost link
+
+npm install sonner next-themes
