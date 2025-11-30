@@ -7,7 +7,8 @@ import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
 import EnrollCourses from "./EnrollCourses";
 import ViewGrades from "./ViewGrades";
-import UploadGrades from "./UploadGrades";
+import UploadGrades from "./EncodeGrades";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function Dashboard() {
   const { firstName, accountType } = useAccount();
@@ -85,6 +86,7 @@ export default function Dashboard() {
         {selectedFeature === "enrollCourses" && <EnrollCourses />}
         {selectedFeature === "viewGrades" && <ViewGrades />}
         {selectedFeature === "uploadGrades" && <UploadGrades />}
+        <Toaster />
       </Container>
     </>
   );

@@ -9,6 +9,7 @@ import { type StudentGrade } from "../lib/grades/getColumnsForAccountType.tsx";
 export default function ViewGrades() {
   const [loading, setLoading] = useState(false);
   const { accountType, accountId } = useAccount();
+  const [grades, setGrades] = useState<Record<string, string>>({});
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -20,6 +21,15 @@ export default function ViewGrades() {
   //   }
   //   fetchData();
   // }, []);
+
+  const handleSubmitGrade = (
+    studentId: number,
+    courseCode: string,
+    grade: string
+  ) => {
+    console.log("Submitting grade:", { studentId, courseCode, grade });
+    // Handle grade submission here
+  };
 
   const gradesData = useMemo(() => {
     // Generate all sample data
@@ -57,7 +67,16 @@ export default function ViewGrades() {
     return enhancedGrades;
   }, [accountType, accountId]);
 
-  const columns = getColumnsForAccountType(accountType || "student");
+  const columns = useMemo(
+    () =>
+      getColumnsForAccountType(
+        accountType,
+        grades,
+        setGrades,
+        handleSubmitGrade
+      ),
+    [accountType, grades]
+  );
 
   if (loading) {
     return (
