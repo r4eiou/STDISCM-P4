@@ -1,7 +1,7 @@
 import CourseCard from "./CourseCard";
 import courseData from "../lib/courseData.ts";
 
-export default function ViewCourses() {
+export default function EnrollCourses() {
   const courseCards = courseData.map((course) => {
     return (
       <CourseCard
