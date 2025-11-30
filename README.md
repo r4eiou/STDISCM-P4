@@ -27,7 +27,7 @@ Open a terminal:
 ```
 
 ### NOTE:
-Ensure your .env files are properly set up for each server with your Supabase URL and service key:
+Ensure your .env files are properly set up for each server (folder/feature) with Supabase URL and service key. 
 
-SUPABASE_URL=<your-supabase-url>
-SUPABASE_SERVICE_KEY=<your-supabase-service-key>
+### FLOW OF REST API MIXED W/ gRPC
+![Screenshot](https://drive.google.com/uc?export=view&id=1nboEJj_A7FdZ3HlMswEAhyGLsjxEG9vw)
