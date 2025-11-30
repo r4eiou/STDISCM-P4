@@ -12,6 +12,7 @@ export default function EnrollCourses() {
         desc={course.description}
         instructor={course.instructor}
         section={course.sectionNumber}
+        time="MH 730-9" // sample only, if enroll input offerings.time, if view leave as null
         variant="enroll"
       />
     );

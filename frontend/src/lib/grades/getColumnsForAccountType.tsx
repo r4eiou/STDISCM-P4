@@ -1,7 +1,6 @@
 import { type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Grade } from "@/data/sampleData";
 import {
   Select,
   SelectContent,
@@ -12,12 +11,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Define StudentGrade interface
-export interface StudentGrade extends Grade {
-  studentName: string;
-  studentLastName: string;
-  studentEmail: string;
-  courseTitle: string;
+export interface Grade {
+  student_id: number;
+  faculty_id: number;
+  course_code: string;
+  section: string;
+  grade: number | null;
+  status: string;
 }
 
 export const getColumnsForAccountType = (
@@ -27,12 +27,8 @@ export const getColumnsForAccountType = (
     updater: (prev: Record<string, string>) => Record<string, string>
   ) => void,
   onSubmitGrade?: (studentId: number, courseCode: string, grade: string) => void
-): ColumnDef<StudentGrade>[] => {
-  const baseColumns: ColumnDef<StudentGrade>[] = [
-    {
-      accessorKey: "studentName",
-      header: "Student Name",
-    },
+): ColumnDef<Grade>[] => {
+  const baseColumns: ColumnDef<Grade>[] = [
     {
       accessorKey: "course_code",
       header: "Course Code",
@@ -74,10 +70,13 @@ export const getColumnsForAccountType = (
           );
         },
       },
+      {
+        accessorKey: "status",
+        header: "Status",
+      },
     ];
   }
 
-  // Faculty sees student information
   if (accountType === "faculty") {
     return [
       {
@@ -170,6 +169,10 @@ export const getColumnsForAccountType = (
             </div>
           );
         },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
       },
     ];
   }
