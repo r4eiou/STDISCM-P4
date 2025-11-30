@@ -20,6 +20,7 @@ interface CourseCardProps {
   maxSlots?: number;
   instructor?: string;
   section?: string | number;
+  time: string;
   variant: "view" | "enroll";
 }
 
@@ -31,6 +32,7 @@ export default function CourseCard({
   maxSlots,
   instructor,
   section,
+  time,
   variant,
 }: CourseCardProps) {
   return (
@@ -67,10 +69,15 @@ export default function CourseCard({
 
       {/* Only show footer if variant is "enroll" and info exists */}
       {variant === "enroll" && (instructor || section) && (
-        <CardFooter className="flex justify-between">
-          {instructor && <CardDescription>Instructor: {instructor}</CardDescription>}
-          {section && <CardDescription>Section: {section}</CardDescription>}
-        </CardFooter>
+        <>
+          <CardFooter className="flex justify-between">
+            <CardDescription>Instructor: {instructor}</CardDescription>
+          </CardFooter>
+          <CardFooter className="flex justify-between">
+            <CardDescription>Section: {section}</CardDescription>
+            <CardDescription>Time: {time}</CardDescription>
+          </CardFooter>
+        </>
       )}
     </Card>
   );
