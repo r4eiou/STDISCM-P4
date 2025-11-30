@@ -20,6 +20,7 @@ interface CourseCardProps {
   desc: string;
   instructor: string;
   section: number;
+  time: string;
   variant: "view" | "enroll";
 }
 
@@ -31,6 +32,7 @@ export default function CourseCard({
   desc,
   instructor,
   section,
+  time,
   variant,
 }: CourseCardProps) {
   return (
@@ -71,7 +73,10 @@ export default function CourseCard({
       </CardContent>
       <CardFooter className="flex justify-between">
         <CardDescription>Instructor: {instructor}</CardDescription>
+      </CardFooter>
+      <CardFooter className="flex justify-between">
         <CardDescription>Section: {section}</CardDescription>
+        <CardDescription>Time: {time}</CardDescription>
       </CardFooter>
     </Card>
   );
