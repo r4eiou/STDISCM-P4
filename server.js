@@ -60,5 +60,8 @@ app.get('/view-courses', (req, res) => {
   });
 });
 
+// ADD other feature gRPC clients and endpoints here
+
+
 // Start API Gateway
 app.listen(4000, () => console.log("API Gateway running on port 4000"));
