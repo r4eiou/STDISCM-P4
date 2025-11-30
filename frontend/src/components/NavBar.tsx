@@ -19,7 +19,8 @@ export default function NavBar() {
       firstName: null,
       lastName: null,
     });
-    navigate("/");
+    localStorage.removeItem("token");
+    window.location.replace("/");
   };
 
   return (
