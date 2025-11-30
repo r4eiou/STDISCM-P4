@@ -7,7 +7,7 @@ import ViewCourses from "./ViewCourses";
 import FeatureCard from "./FeatureCard";
 import EnrollCourses from "./EnrollCourses";
 import ViewGrades from "./ViewGrades";
-import UploadGrades from "./EncodeGrades";
+import EncodeGrades from "./EncodeGrades";
 import { Toaster } from "@/components/ui/sonner";
 
 export default function Dashboard() {
@@ -17,7 +17,7 @@ export default function Dashboard() {
   type FeatureType =
     | "viewCourses"
     | "viewGrades"
-    | "uploadGrades"
+    | "encodeGrades"
     | "enrollCourses"
     | null;
 
@@ -72,9 +72,9 @@ export default function Dashboard() {
               {accountType === "faculty" && (
                 <>
                   <FeatureCard
-                    cardText="Upload Grades"
+                    cardText="Encode Grades"
                     imageUrl="/images/priscilla-du-preez-OEdkPaxYMXU-unsplash.jpg"
-                    onClick={() => handleClickFeature("uploadGrades")}
+                    onClick={() => handleClickFeature("encodeGrades")}
                   ></FeatureCard>
                 </>
               )}
@@ -85,7 +85,7 @@ export default function Dashboard() {
         {selectedFeature === "viewCourses" && <ViewCourses />}
         {selectedFeature === "enrollCourses" && <EnrollCourses />}
         {selectedFeature === "viewGrades" && <ViewGrades />}
-        {selectedFeature === "uploadGrades" && <UploadGrades />}
+        {selectedFeature === "encodeGrades" && <EncodeGrades />}
         <Toaster />
       </Container>
     </>
