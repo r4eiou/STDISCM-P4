@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/AccountContext";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 export default function NavBar() {
   const { accountType, setAccountData } = useAccount();
-  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("accountType changed to:", accountType);
@@ -18,6 +16,7 @@ export default function NavBar() {
       id: null,
       firstName: null,
       lastName: null,
+      email: null,
     });
     localStorage.removeItem("token");
     window.location.replace("/");

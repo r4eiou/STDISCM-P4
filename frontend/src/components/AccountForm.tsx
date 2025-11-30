@@ -17,7 +17,6 @@ import { type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "@/AccountContext";
 
-
 const accountFormSchema = z.object({
   accountType: z.enum(["student", "faculty"], {
     message: "Please select an account type.",
@@ -46,35 +45,40 @@ export default function AccountForm() {
 
   const onSubmit: SubmitHandler<AccountFormFields> = async (data) => {
     try {
-      const res = await fetch('http://localhost:4000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: data.email, password: data.password, accountType: data.accountType }),
-        credentials: 'include'
+      const res = await fetch("http://localhost:4000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          accountType: data.accountType,
+        }),
+        credentials: "include",
       });
 
-      console.log('Response status:', res.status);
+      console.log("Response status:", res.status);
       const result = await res.json();
-      console.log('Response JSON:', result);
+      console.log("Response JSON:", result);
 
       if (res.ok) {
-        console.log('token:', result.token);
-        localStorage.setItem('token', result.token);
+        console.log("token:", result.token);
+        localStorage.setItem("token", result.token);
         setAccountType(data.accountType);
         setAccountData({
           type: result.user.accountType,
           id: result.user.id,
           firstName: result.user.firstName,
           lastName: result.user.lastName,
+          email: result.user.email,
         });
 
         navigate("/dashboard");
       } else {
-        setError('root', { message: result.error });
+        setError("root", { message: result.error });
       }
     } catch (err) {
-      console.error('Fetch error:', err);
-      setError('root', { message: 'Unexpected error' });
+      console.error("Fetch error:", err);
+      setError("root", { message: "Unexpected error" });
     }
   };
 
