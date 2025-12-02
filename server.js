@@ -55,7 +55,10 @@ const viewCoursesClient = new ViewCoursesClient(
 // View courses endpoint
 app.get('/view-courses', (req, res) => {
   viewCoursesClient.GetCourses({}, (err, response) => {
-    if (err) return res.status(500).json({ error: 'gRPC error' });
+    if (err) {
+      console.error("Login service down:", err);
+      return res.status(500).json({ error: 'gRPC error' });
+    } 
     return res.json(response.courses); // only send array of courses
   });
 });

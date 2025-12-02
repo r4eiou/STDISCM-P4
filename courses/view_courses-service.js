@@ -32,7 +32,7 @@ export async function getCourses(call, callback) {
       return;
     }
 
-    console.log('Query result:', data); // now this will log
+    // console.log('Query result:', data);
 
     const response = {
       courses: data.map((c) => ({

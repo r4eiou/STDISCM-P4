@@ -2,6 +2,7 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
   type ReactNode,
 } from "react";
 
@@ -50,6 +51,29 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     setLastName(data.lastName);
     setEmail(data.email);
   };
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("accountData");
+    if (storedData) {
+      try {
+        const parsed = JSON.parse(storedData);
+        setAccountData(parsed);
+      } catch (err) {
+        console.error("Failed to parse accountData from localStorage:", err);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (accountType && accountId) {
+      localStorage.setItem(
+        "accountData",
+        JSON.stringify({ type: accountType, id: accountId, firstName, lastName, email })
+      );
+    } else {
+      localStorage.removeItem("accountData");
+    }
+  }, [accountType, accountId, firstName, lastName, email]);
 
   return (
     <AccountContext.Provider
