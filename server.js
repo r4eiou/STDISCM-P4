@@ -63,6 +63,34 @@ app.get('/view-courses', (req, res) => {
   });
 });
 
+// ENROLL gRPC client
+const enrollPackageDef = protoLoader.loadSync('./enroll/proto/enroll.proto');
+const enrollGrpcObj = grpc.loadPackageDefinition(enrollPackageDef);
+const EnrollClient = enrollGrpcObj.enroll.EnrollService;
+
+const enrollClient = new EnrollClient(
+  'localhost:5003',
+  grpc.credentials.createInsecure()
+);
+
+// Get offerings endpoint
+app.get('/enroll-courses', (req, res) => {
+  enrollClient.GetOfferings({}, (err, response) => {
+    if (err) return res.status(500).json({ error: 'gRPC error' });
+    return res.json(response.offerings);
+  });
+});
+
+// Enroll endpoint
+app.post('/enroll', (req, res) => {
+  const { studentId, courseCode, section } = req.body;
+
+  enrollClient.Enroll({ studentId, courseCode, section }, (err, response) => {
+    if (err) return res.status(500).json({ error: 'gRPC error' });
+    return res.json(response);
+  });
+});
+
 // ADD other feature gRPC clients and endpoints here
 
 
