@@ -14,7 +14,7 @@ import {
 export interface Grade {
   student_id: number;
   faculty_id: number;
-  course_code: string;
+  courseCode: string;
   section: string;
   grade: number | null;
   status: string;
@@ -30,7 +30,7 @@ export const getColumnsForAccountType = (
 ): ColumnDef<Grade>[] => {
   const baseColumns: ColumnDef<Grade>[] = [
     {
-      accessorKey: "course_code",
+      accessorKey: "courseCode",
       header: "Course Code",
     },
     {
@@ -115,7 +115,7 @@ export const getColumnsForAccountType = (
         cell: ({ row }) => {
           const grade = row.getValue("grade") as number | null;
           const studentId = row.getValue("student_id") as number;
-          const courseCode = row.getValue("course_code") as string;
+          const courseCode = row.getValue("courseCode") as string;
           const rowKey = `${studentId}-${courseCode ?? ""}`;
           const selectedGrade = grades?.[rowKey] || "";
 
