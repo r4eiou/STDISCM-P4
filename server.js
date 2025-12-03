@@ -144,8 +144,31 @@ app.post('/enroll', (req, res) => {
   });
 });
 
-// ADD other feature gRPC clients and endpoints here
+// VIEW GRADES gRPC client
+const gradesPackageDef = protoLoader.loadSync("./grade/proto/view_grade.proto");
+const gradesGrpcObj = grpc.loadPackageDefinition(gradesPackageDef);
+const ViewGradesClient = gradesGrpcObj.view_grade.ViewGradeService;
 
+const viewGradesClient = new ViewGradesClient(
+  "localhost:5004",
+  grpc.credentials.createInsecure()
+);
+
+// View grades endpoint
+app.get('/view-grades/:accountId', (req, res) => {
+  const { accountId } = req.params;
+
+  viewGradesClient.GetGrade({ accountId }, (err, response) => {
+    if (err) {
+      console.log("View Grades server down!");
+      return res.status(500).json({ error: 'View Grades server down!' });
+    }
+    res.json(response.grades);
+  });
+});
+
+
+// ADD other feature gRPC clients and endpoints here
 
 // Start API Gateway
 app.listen(4000, () => console.log("API Gateway running on port 4000"));
