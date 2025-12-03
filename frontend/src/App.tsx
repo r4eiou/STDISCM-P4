@@ -5,8 +5,7 @@ import Dashboard from "./components/Dashboard";
 import { useAccount } from "@/AccountContext";
 
 function App() {
-  const { setAccountData, firstName, lastName, accountType, setAccountType } =
-    useAccount();
+  const { accountType } = useAccount();
 
   return (
     <section className=" w-full flex flex-row items-center justify-center h-full">
