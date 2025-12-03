@@ -1,9 +1,18 @@
 // central API Gateway server.js that connects frontend to gRPC services
 
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import grpc from '@grpc/grpc-js';
 import protoLoader from '@grpc/proto-loader';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL, 
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 const app = express();
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
@@ -79,6 +88,42 @@ app.get('/enroll-courses', (req, res) => {
     if (err) return res.status(500).json({ error: 'gRPC error' });
     return res.json(response.offerings);
   });
+});
+
+// Get current student enrollments
+app.get('/student-enrollments/:accountId', async (req, res) => {
+  const { accountId } = req.params;
+  // console.log('Fetching enrollments for accountId:', accountId);
+
+  try {
+    const { data: student, error: studentError } = await supabase
+      .from('student')
+      .select('student_id')
+      .eq('account_id', accountId)
+      .single();
+
+    if (studentError || !student) {
+      console.error('Student lookup error:', studentError);
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    // console.log('Mapped student_id:', student.student_id);
+
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select('course_code, section')
+      .eq('student_id', student.student_id);
+
+    if (error) {
+      console.error('Enrollments fetch error:', error);
+      return res.status(500).json({ error: 'Failed to fetch enrollments' });
+    }
+
+    res.json(data);
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Enroll endpoint

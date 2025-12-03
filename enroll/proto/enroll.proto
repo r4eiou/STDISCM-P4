@@ -35,8 +35,22 @@ message GetOfferingsResponse {
   repeated Offering offerings = 1;
 }
 
+message GetEnrollmentsRequest {
+  string studentId = 1;
+}
+
+message GetEnrollmentsResponse {
+  repeated Enrollment enrollments = 1;
+}
+
+message Enrollment {
+  string courseCode = 1;
+  string section = 2;
+}
+
 // Service
 service EnrollService {
   rpc GetOfferings(GetOfferingsRequest) returns (GetOfferingsResponse);
   rpc Enroll(EnrollRequest) returns (EnrollResponse);
+  rpc GetStudentEnrollments(GetEnrollmentsRequest) returns (GetEnrollmentsResponse);
 }

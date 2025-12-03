@@ -56,20 +56,77 @@ export async function getOfferings(call, callback) {
   }
 }
 
-// Enroll a student
-export async function enroll(call, callback) {
-  const { studentId, courseCode, section } = call.request;
+// Return all courses the student is currently enrolled in
+export async function getStudentEnrollments(call, callback) {
+  const { studentId } = call.request;
 
   try {
-    // check remaining slots
-    const { data: offering, error } = await supabase
+    const { data, error } = await supabase
+      .from('enrollments')
+      .select('course_code, section')
+      .eq('student_id', studentId);
+
+    if (error) return callback(error, null);
+
+    callback(null, { enrollments: data });
+  } catch (err) {
+    console.error("getStudentEnrollments error:", err);
+    callback(err, null);
+  }
+}
+
+// Enroll a student
+export async function enroll(call, callback) {
+  const { studentId: accountId, courseCode, section } = call.request; // accountId is UUID
+
+  try {
+    // 1. Map accountId to student_id
+    const { data: studentData, error: studentError } = await supabase
+      .from('student')
+      .select('student_id')
+      .eq('account_id', accountId)
+      .single();
+
+    if (studentError || !studentData) {
+      return callback(null, { success: false, message: 'Student not found' });
+    }
+
+    const studentId = studentData.student_id;
+
+    // 2a. Check if student already enrolled in the same course (any section)
+    const { data: anySection, error: anySectionError } = await supabase
+      .from('enrollments')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('course_code', courseCode)
+      .single();
+
+    if (anySection) {
+      return callback(null, { success: false, message: 'You are already enrolled in this course' });
+    }
+
+    // 2b. Check if student already enrolled / taken the course
+    const { data: existing } = await supabase
+      .from('grades')
+      .select('*')
+      .eq('student_id', studentId)
+      .eq('course_code', courseCode)
+      .eq('section', section)
+      .single();
+
+    if (existing) {
+      return callback(null, { success: false, message: 'You have already taken this course' });
+    }
+
+    // 3. Check remaining slots
+    const { data: offering, error: offeringError } = await supabase
       .from('offerings')
       .select('remaining')
       .eq('course_code', courseCode)
       .eq('section', section)
       .single();
 
-    if (error || !offering) {
+    if (offeringError || !offering) {
       return callback(null, { success: false, message: 'Course not found' });
     }
 
@@ -77,14 +134,16 @@ export async function enroll(call, callback) {
       return callback(null, { success: false, message: 'No slots available' });
     }
 
-    // insert into enrollments table
-    await supabase.from('enrollments').insert({
-      student_id: studentId,
-      course_code: courseCode,
-      section
-    });
+    // 4. Insert into enrollments
+    const { data: enrollData, error: enrollError } = await supabase
+      .from('enrollments')
+      .insert({ student_id: studentId, course_code: courseCode, section });
 
-    // decrement remaining slots
+    if (enrollError) {
+      return callback(null, { success: false, message: enrollError.message });
+    }
+
+    // 5. Decrement remaining slots
     await supabase
       .from('offerings')
       .update({ remaining: offering.remaining - 1 })
@@ -93,6 +152,7 @@ export async function enroll(call, callback) {
 
     callback(null, { success: true, message: 'Enrolled successfully' });
   } catch (err) {
+    console.error("Enroll error:", err);
     callback(err, null);
   }
 }
