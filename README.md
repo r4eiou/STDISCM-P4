@@ -30,8 +30,12 @@ Open a terminal:
 
     docker run -d --name encode-server --net my-network --ip 172.20.0.6 encode-image
 
-    docker run -d --name server --net my-network --ip 172.20.0.8 -p 4000:4000 server-image
+    docker run -d --name api1 --net my-network --ip 172.20.0.8 server-image
+    docker run -d --name api2 --net my-network --ip 172.20.0.9 server-image
+
     docker run -d --name frontend --net my-network --ip 172.20.0.10 -p 5173:5173 frontend-image
+
+    docker run -d --name nginx-lb -p 4000:4000 --net my-network -v ./nginx.conf:/etc/nginx/nginx.conf nginx
 ```
 
 ### NOTE:
