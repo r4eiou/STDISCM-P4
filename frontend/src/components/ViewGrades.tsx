@@ -55,7 +55,7 @@ export default function ViewGrades() {
 
   const columns = getColumnsForAccountType(accountType, {}, () => {}, handleSubmitGrade);
 
-  if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>;
+  if (loading) return <div className="text-gray-600 m-2">Loading courses...</div>;
   if (error) return <div className="text-red-600 m-2">{error}</div>;
 
   return (

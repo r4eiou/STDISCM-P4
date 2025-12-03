@@ -15,7 +15,10 @@ const supabase = createClient(
 );
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({
+  origin: ["http://localhost:5173", "http://172.20.0.10:5173"],
+  credentials: true
+}));
 app.use(express.json());
 
 // LOGIN gRPC client
@@ -24,7 +27,7 @@ const grpcObj = grpc.loadPackageDefinition(packageDef);
 const LoginClient = grpcObj.login.LoginService;
 
 const client = new LoginClient(
-  "localhost:5001", 
+  "172.20.0.2:5001", 
   grpc.credentials.createInsecure()
 );
 
@@ -62,7 +65,7 @@ const coursesGrpcObj = grpc.loadPackageDefinition(coursesPackageDef);
 const ViewCoursesClient = coursesGrpcObj.view_courses.ViewCoursesService;
 
 const viewCoursesClient = new ViewCoursesClient(
-  "localhost:5002",
+  "172.20.0.3:5002", 
   grpc.credentials.createInsecure()
 );
 
@@ -83,7 +86,7 @@ const enrollGrpcObj = grpc.loadPackageDefinition(enrollPackageDef);
 const EnrollClient = enrollGrpcObj.enroll.EnrollService;
 
 const enrollClient = new EnrollClient(
-  'localhost:5003',
+  "172.20.0.4:5003", 
   grpc.credentials.createInsecure()
 );
 
@@ -150,7 +153,7 @@ const gradesGrpcObj = grpc.loadPackageDefinition(gradesPackageDef);
 const ViewGradesClient = gradesGrpcObj.view_grade.ViewGradeService;
 
 const viewGradesClient = new ViewGradesClient(
-  "localhost:5004",
+  "172.20.0.5:5004",
   grpc.credentials.createInsecure()
 );
 
@@ -171,4 +174,6 @@ app.get('/view-grades/:accountId', (req, res) => {
 // ADD other feature gRPC clients and endpoints here
 
 // Start API Gateway
-app.listen(4000, () => console.log("API Gateway running on port 4000"));
+app.listen(4000, "0.0.0.0", () => 
+  console.log("API Gateway running on 172.20.0.8:4000")
+);
