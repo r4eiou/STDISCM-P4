@@ -1,16 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { useAccount } from "@/AccountContext";
 import { useEffect } from "react";
+import { ModeToggle } from "./ModeToggle";
 
 export default function NavBar() {
   const { accountType, setAccountData } = useAccount();
 
   useEffect(() => {
-    console.log("accountType changed to:", accountType);
+    // console.log("accountType changed to:", accountType);
   }, [accountType]);
 
   const handleLogout = () => {
-    console.log("Before logout:", accountType);
+    // console.log("Before logout:", accountType);
     setAccountData({
       type: null,
       id: null,
@@ -23,13 +24,21 @@ export default function NavBar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full px-8 py-2 bg-secondary border-b border-slate-900">
+    <nav
+      className={`sticky top-0 z-50 w-full px-8 py-2 drop-shadow ${
+        !accountType ? "bg-secondary" : "bg-primary"
+      }`}
+    >
       <div className="w-full flex items-center justify-between">
         <span className="text-xl font-extrabold ">Shiz University</span>
+        {!accountType && <ModeToggle />}
         {accountType && (
-          <Button variant={"ghost"} onClick={handleLogout}>
-            Logout
-          </Button>
+          <div className="flex justify-items">
+            <ModeToggle />
+            <Button variant={"ghost"} onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
         )}
       </div>
     </nav>

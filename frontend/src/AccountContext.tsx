@@ -1,6 +1,7 @@
 import React, {
   createContext,
   useContext,
+  useEffect,
   useState,
   useEffect,
   type ReactNode,
@@ -14,12 +15,6 @@ interface AccountContextType {
   firstName: string | null;
   lastName: string | null;
   email: string | null;
-  setAccountType: (type: AccountType) => void;
-  setAccountId: (id: number | null) => void;
-  setFirstName: (name: string | null) => void;
-  setLastName: (name: string | null) => void;
-  setEmail: (email: string | null) => void;
-
   setAccountData: (data: {
     type: AccountType;
     id: number | null;
@@ -27,16 +22,40 @@ interface AccountContextType {
     lastName: string | null;
     email: string | null;
   }) => void;
+  clearAccount: () => void;
 }
 
 const AccountContext = createContext<AccountContextType | undefined>(undefined);
+const STORAGE_KEY = "accountData";
 
 export function AccountProvider({ children }: { children: ReactNode }) {
-  const [accountType, setAccountType] = useState<AccountType>(null);
-  const [accountId, setAccountId] = useState<number | null>(null);
-  const [firstName, setFirstName] = useState<string | null>(null);
-  const [lastName, setLastName] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
+  const [accountData, setAccountDataState] = useState(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return {
+          type: null,
+          id: null,
+          firstName: null,
+          lastName: null,
+          email: null,
+        };
+      }
+    }
+    return {
+      type: null,
+      id: null,
+      firstName: null,
+      lastName: null,
+      email: null,
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(accountData));
+  }, [accountData]);
 
   const setAccountData = (data: {
     type: AccountType;
@@ -45,11 +64,18 @@ export function AccountProvider({ children }: { children: ReactNode }) {
     lastName: string | null;
     email: string | null;
   }) => {
-    setAccountType(data.type);
-    setAccountId(data.id);
-    setFirstName(data.firstName);
-    setLastName(data.lastName);
-    setEmail(data.email);
+    setAccountDataState(data);
+  };
+
+  const clearAccount = () => {
+    setAccountDataState({
+      type: null,
+      id: null,
+      firstName: null,
+      lastName: null,
+      email: null,
+    });
+    localStorage.removeItem(STORAGE_KEY);
   };
 
   useEffect(() => {
@@ -78,17 +104,13 @@ export function AccountProvider({ children }: { children: ReactNode }) {
   return (
     <AccountContext.Provider
       value={{
-        accountType,
-        setAccountType,
-        accountId,
-        setAccountId,
-        firstName,
-        setFirstName,
-        lastName,
-        setLastName,
-        email,
-        setEmail,
+        accountType: accountData.type,
+        accountId: accountData.id,
+        firstName: accountData.firstName,
+        lastName: accountData.lastName,
+        email: accountData.email,
         setAccountData,
+        clearAccount,
       }}
     >
       {children}
