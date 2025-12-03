@@ -28,7 +28,7 @@ const accountFormSchema = z.object({
 type AccountFormFields = z.infer<typeof accountFormSchema>;
 
 export default function AccountForm() {
-  const { setAccountType, setAccountData } = useAccount();
+  const { setAccountData } = useAccount();
 
   const navigate = useNavigate();
   const {
@@ -63,7 +63,6 @@ export default function AccountForm() {
       if (res.ok) {
         console.log("token:", result.token);
         localStorage.setItem("token", result.token);
-        setAccountType(data.accountType);
         setAccountData({
           type: result.user.accountType,
           id: result.user.id,

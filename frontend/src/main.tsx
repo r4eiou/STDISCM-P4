@@ -5,6 +5,7 @@ import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./components/Dashboard.tsx";
 import { AccountProvider } from "./AccountContext.tsx";
+import { ThemeProvider } from "./components/ThemeProvider.tsx";
 import Layout from "./Layout.tsx";
 import ViewCourses from "./components/ViewCourses.tsx";
 import ViewGrades from "./components/ViewGrades.tsx";
@@ -21,16 +22,16 @@ const router = createBrowserRouter([
       { path: "/view-grades", element: <ViewGrades /> },
       { path: "/enroll-courses", element: <EnrollCourses /> },
       { path: "/encode-grades", element: <EncodeGrades /> },
-
     ],
   },
 ]);
 
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AccountProvider>
-      <RouterProvider router={router}></RouterProvider>
-    </AccountProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AccountProvider>
+        <RouterProvider router={router}></RouterProvider>
+      </AccountProvider>
+    </ThemeProvider>
   </StrictMode>
 );
