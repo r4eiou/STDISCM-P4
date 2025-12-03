@@ -33,7 +33,12 @@ app.post('/login', (req, res) => {
   const { email, password, accountType } = req.body;
 
   client.Login({ email, password, accountType }, (err, response) => {
-    if (err) return res.status(500).json({ error: "gRPC error" });
+    if (err) {
+      console.log("Login server down!");
+      return res.status(500).json({ error: 'Login server down' });
+    } else {
+      console.log("Login server up!");
+    }
 
     if (response.error)
       return res.status(401).json({ error: response.error });
@@ -65,8 +70,8 @@ const viewCoursesClient = new ViewCoursesClient(
 app.get('/view-courses', (req, res) => {
   viewCoursesClient.GetCourses({}, (err, response) => {
     if (err) {
-      console.error("Login service down:", err);
-      return res.status(500).json({ error: 'gRPC error' });
+      console.log("View Courses server down!");
+      return res.status(500).json({ error: 'View Courses server down!' });
     } 
     return res.json(response.courses); // only send array of courses
   });
@@ -85,7 +90,10 @@ const enrollClient = new EnrollClient(
 // Get offerings endpoint
 app.get('/enroll-courses', (req, res) => {
   enrollClient.GetOfferings({}, (err, response) => {
-    if (err) return res.status(500).json({ error: 'gRPC error' });
+    if (err) {
+      console.log("Enroll courses server down!", err);
+      return res.status(500).json({ error: 'Enroll courses server down' });
+    } 
     return res.json(response.offerings);
   });
 });

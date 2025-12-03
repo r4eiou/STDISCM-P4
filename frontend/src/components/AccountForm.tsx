@@ -16,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "@/AccountContext";
+import { useState } from "react";
 
 const accountFormSchema = z.object({
   accountType: z.enum(["student", "faculty"], {
@@ -29,6 +30,7 @@ type AccountFormFields = z.infer<typeof accountFormSchema>;
 
 export default function AccountForm() {
   const { setAccountType, setAccountData } = useAccount();
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const {
@@ -44,42 +46,47 @@ export default function AccountForm() {
   });
 
   const onSubmit: SubmitHandler<AccountFormFields> = async (data) => {
-    try {
-      const res = await fetch("http://localhost:4000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-          accountType: data.accountType,
-        }),
-        credentials: "include",
-      });
-
-      console.log("Response status:", res.status);
-      const result = await res.json();
-      console.log("Response JSON:", result);
-
-      if (res.ok) {
-        console.log("token:", result.token);
-        localStorage.setItem("token", result.token);
-        setAccountType(data.accountType);
-        setAccountData({
-          type: result.user.accountType,
-          id: result.user.id,
-          firstName: result.user.firstName,
-          lastName: result.user.lastName,
-          email: result.user.email,
+    const attemptLogin = async () => {
+      setLoginError(null);
+      
+      try {
+        const res = await fetch("http://localhost:4000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+            accountType: data.accountType,
+          }),
+          credentials: "include",
         });
+        
+        const result = await res.json();
+        if (res.ok) {
+          localStorage.setItem("token", result.token);
+          setAccountType(data.accountType);
+          setAccountData({
+            type: result.user.accountType,
+            id: result.user.id,
+            firstName: result.user.firstName,
+            lastName: result.user.lastName,
+            email: result.user.email,
+          });
 
-        navigate("/dashboard");
-      } else {
-        setError("root", { message: result.error });
+          setLoginError(null);
+          navigate("/dashboard");
+
+        } 
+        else {
+          setLoginError(result.error || "Login failed. Invalid credentials.");
+        }
+      } catch (err) {
+        console.error("Login fetch error:", err);
+        setLoginError("Server unavailable.");
       }
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("root", { message: "Unexpected error" });
-    }
+    };
+
+    attemptLogin();
   };
 
   return (
@@ -144,6 +151,7 @@ export default function AccountForm() {
             <Button disabled={isSubmitting} type="submit" className="w-full">
               {isSubmitting ? "Loading..." : "Login"}
             </Button>
+            {loginError && <div className="text-red-600 mt-2">{loginError}</div>}
           </CardFooter>
           {errors.password && (
             <div className="text-destructive-foreground">
