@@ -9,16 +9,43 @@ interface Course {
 
 export default function ViewCourses() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:4000/view-courses")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("API response:", data);
-        setCourses(data);
-      })
-      .catch((err) => console.error(err));
+    let isMounted = true;
+
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/view-courses");
+        if (!res.ok) throw new Error("Service unavailable");
+        const data: Course[] = await res.json();
+        if (isMounted) {
+          setCourses(data);
+          setError(null);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Fetch failed:", err);
+        if (isMounted) {
+          setError("Service unavailable. Retrying...");
+          setLoading(false);
+        }
+        // Retry after 5 seconds
+        setTimeout(fetchCourses, 5000);
+      }
+    };
+
+    fetchCourses();
+
+    return () => {
+      isMounted = false; // cleanup
+    };
   }, []);
+
+  // Display error message
+  if (loading) return <div className="text-gray-600 m-2">Loading courses...</div>;
+  if (error) return <div className="text-red-600 m-2">{error}</div>;
 
   return (
     <>
@@ -33,6 +60,7 @@ export default function ViewCourses() {
           desc={course.description}
           instructor="" // placeholder if not fetching faculty
           section={0} // placeholder if not fetching section
+          time=""
           variant="view"
         />
       ))}

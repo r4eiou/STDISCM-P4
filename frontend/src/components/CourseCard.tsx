@@ -22,6 +22,8 @@ interface CourseCardProps {
   section?: string | number;
   time: string;
   variant: "view" | "enroll";
+  enrolled?: boolean;
+  onEnroll?: (courseCode: string, section: string) => void;
 }
 
 export default function CourseCard({
@@ -34,6 +36,8 @@ export default function CourseCard({
   section,
   time,
   variant,
+  enrolled,
+  onEnroll
 }: CourseCardProps) {
   return (
     <Card className="w-1/2 m-3">
@@ -51,8 +55,12 @@ export default function CourseCard({
                   <Badge variant="default">
                     {remSlots} / {maxSlots}
                   </Badge>
-                  <Button className="hover:scale-110 ease-in-out transition-transform">
-                    Enroll
+                  <Button 
+                    className="hover:scale-110 ease-in-out transition-transform"
+                    disabled={enrolled}
+                    onClick={() => onEnroll?.(courseId.toString(), section?.toString() || "")}
+                  >
+                    {enrolled ? "Enrolled" : "Enroll"}
                   </Button>
                 </div>
               ) : (
