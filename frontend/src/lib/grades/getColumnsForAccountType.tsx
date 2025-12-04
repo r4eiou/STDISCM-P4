@@ -27,15 +27,15 @@ export interface StudentGrade extends Grade {
   courseTitle: string;
 }
 
-export const getColumnsForAccountType = (
+export const getColumnsForAccountType =<T extends Grade>(
   accountType: string | null,
   grades: Record<string, string>,
   setGrades: (
     updater: (prev: Record<string, string>) => Record<string, string>
   ) => void,
   onSubmitGrade?: (studentId: number, courseCode: string, grade: string) => void
-): ColumnDef<StudentGrade>[] => {
-  const baseColumns: ColumnDef<StudentGrade>[] = [
+): ColumnDef<T>[] => {
+  const baseColumns: ColumnDef<T>[] = [
     {
       accessorKey: "courseCode",
       header: "Course Code",

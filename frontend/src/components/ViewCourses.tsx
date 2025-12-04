@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CourseCard from "./CourseCard";
+import { fetchWithTimeout } from "@/lib/utils.ts";
 
 interface Course {
   courseCode: string;
@@ -19,7 +20,7 @@ export default function ViewCourses() {
 
     const fetchCourses = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/view-courses`);
+        const res = await fetchWithTimeout(`${BASE_URL}/view-courses`);
         if (!res.ok) throw new Error("Service unavailable");
         const data: Course[] = await res.json();
         if (isMounted) {

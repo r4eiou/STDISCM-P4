@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "@/AccountContext";
 import CourseCard from "./CourseCard";
+import { fetchWithTimeout } from "@/lib/utils.ts";
 
 import { toast } from "react-toastify";
 
@@ -33,12 +34,12 @@ export default function EnrollCourses() {
     const fetchAll = async () => {
       try {
         // Fetch offerings
-        const offeringsRes = await fetch(`${BASE_URL}/enroll-courses`);
+        const offeringsRes = await fetchWithTimeout(`${BASE_URL}/enroll-courses`);
         if (!offeringsRes.ok) throw new Error("Offerings service unavailable");
         const offeringsData = await offeringsRes.json();
 
         // Fetch current enrollments
-        const enrollRes = await fetch(`${BASE_URL}/student-enrollments/${accountId}`);
+        const enrollRes = await fetchWithTimeout(`${BASE_URL}/student-enrollments/${accountId}`);
         if (!enrollRes.ok) throw new Error("Enrollments service unavailable");
         const enrollData = await enrollRes.json();
 

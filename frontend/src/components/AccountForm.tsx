@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { useAccount } from "@/AccountContext";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { fetchWithTimeout } from "@/lib/utils.ts";
 
 const accountFormSchema = z.object({
   accountType: z.enum(["student", "faculty"], {
@@ -52,7 +53,7 @@ export default function AccountForm() {
       setLoginError(null);
       
       try {
-        const res = await fetch(`${BASE_URL}/login`, {
+        const res = await fetchWithTimeout(`${BASE_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
