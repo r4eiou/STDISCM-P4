@@ -106,17 +106,17 @@ export async function getStudentsByFaculty(call, callback) {
 
     // Step 8: Build response
     const response = {
-      students: grades.map(g => ({
-        studentId: g.student_id,
-        studentName: studentMap[g.student_id]?.name || 'Unknown Student',
-        studentEmail: studentMap[g.student_id]?.email || '',
-        courseCode: g.course_code,
-        courseTitle: courseMap[g.course_code] || g.course_code,
-        section: g.section,
-        currentGrade: g.grade || 0,
-        status: g.status || 'ongoing'
-      }))
-    };
+        students: grades.map(g => ({
+            studentId: g.student_id,
+            studentName: studentMap[g.student_id]?.name || 'Unknown Student',
+            studentEmail: studentMap[g.student_id]?.email || '',
+            courseCode: g.course_code,
+            courseTitle: courseMap[g.course_code] || g.course_code,
+            section: g.section,
+            currentGrade: g.grade, // DON'T convert to 0, keep as null
+            status: g.status || 'ongoing'
+        }))
+        };
 
     console.log('=== Final response ===');
     console.log('Total students:', response.students.length);
@@ -151,9 +151,10 @@ export async function uploadGrade(call, callback) {
     }
 
     const facultyIdNum = faculty.faculty_id;
+    console.log('Faculty ID (numeric):', facultyIdNum);
 
-    // Step 2: Check if this grade record exists for this faculty
-    const { data: existingGrade } = await supabase
+    // Step 2: Verify this grade record exists for this faculty
+    const { data: existingGrade, error: gradeCheckError } = await supabase
       .from('grades')
       .select('*')
       .eq('student_id', studentId)
@@ -162,54 +163,45 @@ export async function uploadGrade(call, callback) {
       .eq('faculty_id', facultyIdNum)
       .maybeSingle();
 
-    console.log('Existing grade check:', existingGrade);
+    console.log('Existing grade check:', { existingGrade, gradeCheckError });
 
-    // Step 3: Determine status based on grade
-    // Assuming status is 'ongoing' if no grade, 'passed'/'failed' if graded
-    let gradeStatus = 'ongoing';
-    if (grade >= 1.0 && grade <= 5.0) {
-      gradeStatus = grade <= 3.0 ? 'passed' : 'failed';
-    }
-
-    let result;
-
-    if (existingGrade) {
-      // Update existing grade
-      result = await supabase
-        .from('grades')
-        .update({ 
-          grade: grade,
-          status: gradeStatus
-        })
-        .eq('student_id', studentId)
-        .eq('course_code', courseCode)
-        .eq('section', section)
-        .eq('faculty_id', facultyIdNum);
-      
-      console.log('Grade updated:', result);
-    } else {
-      // This shouldn't normally happen since grades are created when students enroll
-      // But we'll handle it anyway
-      result = await supabase
-        .from('grades')
-        .insert({
-          student_id: studentId,
-          course_code: courseCode,
-          section: section,
-          grade: grade,
-          status: gradeStatus,
-          faculty_id: facultyIdNum
-        });
-      
-      console.log('Grade inserted:', result);
-    }
-
-    if (result.error) {
-      console.error('Database error:', result.error);
-      callback(null, { success: false, message: result.error.message });
+    if (!existingGrade) {
+      console.log('Grade record not found for this faculty');
+      callback(null, { 
+        success: false, 
+        message: 'You are not authorized to grade this enrollment or enrollment not found' 
+      });
       return;
     }
 
+    // Step 3: Determine status based on grade
+    // CHANGED: Use 'completed' instead of 'passed'/'failed'
+    let gradeStatus = 'ongoing';
+    if (grade >= 1.0 && grade <= 5.0) {
+      gradeStatus = 'completed';
+    }
+
+    console.log('Grade status determined:', gradeStatus);
+
+    // Step 4: Update the grade
+    const { error: updateError } = await supabase
+      .from('grades')
+      .update({ 
+        grade: grade,
+        status: gradeStatus
+      })
+      .eq('student_id', studentId)
+      .eq('course_code', courseCode)
+      .eq('section', section)
+      .eq('faculty_id', facultyIdNum);
+
+    if (updateError) {
+      console.error('Database error:', updateError);
+      callback(null, { success: false, message: updateError.message });
+      return;
+    }
+
+    console.log('Grade successfully updated');
     callback(null, { 
       success: true, 
       message: `Grade ${grade} uploaded successfully. Status: ${gradeStatus}` 

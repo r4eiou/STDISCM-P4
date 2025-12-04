@@ -101,7 +101,7 @@ export async function enroll(call, callback) {
   try {
     // 1. Map accountId to student_id
     const { data: studentData, error: studentError } = await supabase
-      .from('student') // student table
+      .from('student')
       .select('student_id')
       .eq('account_id', accountId)
       .single();
@@ -114,7 +114,7 @@ export async function enroll(call, callback) {
 
     // 2a. Check if student already enrolled in the same course (any section)
     const { data: anySection, error: anySectionError } = await supabase
-      .from('enrollments') // enrollments table
+      .from('enrollments')
       .select('*')
       .eq('student_id', studentId)
       .eq('course_code', courseCode)
@@ -143,15 +143,23 @@ export async function enroll(call, callback) {
       });
     }
 
-    // 2c. Get time of desired course
-    const { data: newOffering } = await supabase
+    // 2c. Get time of desired course AND faculty_id
+    const { data: newOffering, error: offeringFetchError } = await supabase
       .from("offerings")
-      .select("time")
+      .select("time, faculty_id")
       .eq("course_code", courseCode)
       .eq("section", section)
       .single();
 
+    if (offeringFetchError || !newOffering) {
+      return callback(null, { 
+        success: false, 
+        message: 'Course offering not found' 
+      });
+    }
+
     const newRange = getTimeRange(newOffering.time);
+    const facultyId = newOffering.faculty_id;
 
     const { data: enrolledClasses } = await supabase
       .from("enrollments")
@@ -189,13 +197,15 @@ export async function enroll(call, callback) {
     if (offeringError || !offering) {
       return callback(null, { 
         success: false, 
-        message: 'Course not found' });
+        message: 'Course not found' 
+      });
     }
 
     if (offering.remaining <= 0) {
       return callback(null, { 
         success: false, 
-        message: 'No slots available' });
+        message: 'No slots available' 
+      });
     }
 
     // 4. Insert into enrollments
@@ -210,7 +220,25 @@ export async function enroll(call, callback) {
       });
     }
 
-    // 5. Decrement remaining slots
+    // 5. Create grade record for this enrollment
+    const { error: gradeError } = await supabase
+      .from('grades')
+      .insert({
+        student_id: studentId,
+        course_code: courseCode,
+        section: section,
+        grade: 0, // or null if your schema allows
+        status: 'ongoing',
+        faculty_id: facultyId
+      });
+
+    if (gradeError) {
+      console.error('Failed to create grade record:', gradeError);
+      // Note: Enrollment was already created, so we continue
+      // In production, you might want to rollback the enrollment
+    }
+
+    // 6. Decrement remaining slots
     await supabase
       .from('offerings')
       .update({ remaining: offering.remaining - 1 })

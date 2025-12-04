@@ -54,68 +54,96 @@ export default function EncodeGrades() {
     fetchGradesData();
   }, [accountType, accountId, BASE_URL]);
 
-  const handleSubmitGrade = async (
-    studentId: number,
-    courseCode: string,
-    grade: string
-  ) => {
-    try {
-      // Find the section for this enrollment
-      const enrollment = gradesData.find(
-        item => item.student_id === studentId && item.course_code === courseCode
+ const handleSubmitGrade = async (
+  studentId: number,
+  courseCode: string,
+  grade: string
+) => {
+  console.log('=== handleSubmitGrade called ===');
+  console.log('studentId:', studentId);
+  console.log('courseCode:', courseCode);
+  console.log('grade:', grade);
+  console.log('accountId:', accountId);
+  console.log('All grades data:', gradesData); // ADD THIS to see the structure
+
+  try {
+    // Find the section for this enrollment
+    // CHANGED: Search using both courseCode and course_code
+    const enrollment = gradesData.find(
+      item => item.student_id === studentId && 
+             (item.courseCode === courseCode || item.course_code === courseCode)
+    );
+
+    console.log('Enrollment found:', enrollment);
+
+    if (!enrollment) {
+      toast.error("Enrollment not found");
+      return;
+    }
+
+    const payload = {
+      studentId,
+      courseCode,
+      section: enrollment.section,
+      grade: parseFloat(grade),
+      facultyId: accountId
+    };
+
+    console.log('Sending payload:', payload);
+
+    const response = await fetch(`${BASE_URL}/upload-grade`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    console.log('Response status:', response.status);
+    
+    const result = await response.json();
+    console.log('Response data:', result);
+
+    if (response.ok && result.success) {
+      // Use 'completed' for graded courses
+      let newStatus = 'ongoing';
+      const gradeNum = parseFloat(grade);
+      if (gradeNum >= 1.0 && gradeNum <= 5.0) {
+        newStatus = 'completed';
+      }
+
+      // Update local state - check both courseCode and course_code
+      setGradesData((prev) =>
+        prev.map((item) =>
+          item.student_id === studentId && 
+          (item.courseCode === courseCode || item.course_code === courseCode) && 
+          item.section === enrollment.section
+            ? { 
+                ...item, 
+                grade: parseFloat(grade),
+                status: newStatus
+              }
+            : item
+        )
       );
 
-      if (!enrollment) {
-        toast.error("Enrollment not found");
-        return;
-      }
-
-      const response = await fetch(`${BASE_URL}/upload-grade`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentId,
-          courseCode,
-          section: enrollment.section,
-          grade: parseFloat(grade),
-          facultyId: accountId
-        })
+      // Clear selection
+      setGrades((prev) => {
+        const newGrades = { ...prev };
+        delete newGrades[`${studentId}-${courseCode}-${enrollment.section}`];
+        return newGrades;
       });
 
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        // Update local state
-        setGradesData((prev) =>
-          prev.map((item) =>
-            item.student_id === studentId && item.course_code === courseCode
-              ? { 
-                  ...item, 
-                  grade: parseFloat(grade),
-                  status: parseFloat(grade) >= 1.0 ? 'completed' : 'ongoing'
-                }
-              : item
-          )
-        );
-
-        // Clear selection
-        setGrades((prev) => {
-          const newGrades = { ...prev };
-          delete newGrades[`${studentId}-${courseCode}`];
-          return newGrades;
-        });
-
-        toast.success("Grade uploaded successfully", {
-          description: `Grade ${grade} has been recorded for student in ${courseCode}.`,
-        });
-      } else {
-        toast.error(result.message || "Failed to upload grade");
-      }
-    } catch (error) {
-      console.error('Error uploading grade:', error);
-      toast.error("Encode Grades service is unavailable");
+      toast.success("Grade uploaded successfully", {
+        description: `Grade ${grade} recorded. Status: ${newStatus}`,
+      });
+    } else {
+      console.error('Upload failed:', result);
+      toast.error(result.message || "Failed to upload grade");
     }
-  };
+  } catch (error) {
+    console.error('Error uploading grade:', error);
+    toast.error("Encode Grades service is unavailable");
+  }
+};
 
   const columns = useMemo(
     () =>
