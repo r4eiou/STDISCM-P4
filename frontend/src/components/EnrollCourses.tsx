@@ -15,6 +15,7 @@ interface Offering {
   instructor: string;
 }
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function EnrollCourses() {
   const [offerings, setOfferings] = useState<Offering[]>([]);
   const [enrollments, setEnrollments] = useState<string[]>([]);
@@ -28,7 +29,7 @@ export default function EnrollCourses() {
     
     const fetchOfferings = async () => {
       try {
-        const res = await fetch("http://localhost:4000/enroll-courses");
+        const res = await fetch(`${BASE_URL}/enroll-courses`);
         if (!res.ok) throw new Error("Service unavailable");
         const data = await res.json();
 
@@ -58,7 +59,7 @@ export default function EnrollCourses() {
 
     const fetchEnrollments = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/student-enrollments/${accountId}`);
+        const res = await fetch(`${BASE_URL}/student-enrollments/${accountId}`);
         const data = await res.json();
 
         setEnrollments(data.map((e: any) => `${e.course_code}-${e.section}`));
@@ -73,7 +74,7 @@ export default function EnrollCourses() {
 
   const handleEnroll = async (courseCode: string, section: string) => {
     try {
-      const res = await fetch("http://localhost:4000/enroll", {
+      const res = await fetch(`${BASE_URL}/enroll`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

@@ -4,6 +4,7 @@ import { getColumnsForAccountType } from "../lib/grades/getColumnsForAccountType
 import { useAccount } from "@/AccountContext.tsx";
 import { type Grade } from "../lib/grades/getColumnsForAccountType.tsx";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function ViewGrades() {
   const [gradesData, setGradesData] = useState<Grade[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ export default function ViewGrades() {
       setLoading(true);
       try {
         // Call your backend endpoint
-        const res = await fetch(`http://localhost:4000/view-grades/${accountId}`);
+        const res = await fetch(`${BASE_URL}/view-grades/${accountId}`);
         if (!res.ok) throw new Error("Service unavailable");
         const data: Grade[] = await res.json();
 

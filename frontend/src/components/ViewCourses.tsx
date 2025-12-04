@@ -7,6 +7,8 @@ interface Course {
   description: string;
 }
 
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function ViewCourses() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +19,7 @@ export default function ViewCourses() {
 
     const fetchCourses = async () => {
       try {
-        const res = await fetch("http://localhost:4000/view-courses");
+        const res = await fetch(`${BASE_URL}/view-courses`);
         if (!res.ok) throw new Error("Service unavailable");
         const data: Course[] = await res.json();
         if (isMounted) {

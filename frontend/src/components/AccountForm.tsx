@@ -45,12 +45,13 @@ export default function AccountForm() {
     resolver: zodResolver(accountFormSchema),
   });
 
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const onSubmit: SubmitHandler<AccountFormFields> = async (data) => {
     const attemptLogin = async () => {
       setLoginError(null);
       
       try {
-        const res = await fetch("http://localhost:4000/login", {
+        const res = await fetch(`${BASE_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
