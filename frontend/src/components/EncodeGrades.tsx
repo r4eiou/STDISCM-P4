@@ -34,7 +34,7 @@ export default function EncodeGrades() {
           student_id: item.studentId,
           studentName: item.studentName,
           studentEmail: item.studentEmail,
-          course_code: item.courseCode,
+          courseCode: item.courseCode,
           courseTitle: item.courseTitle,
           section: item.section,
           grade: item.currentGrade,
@@ -71,7 +71,7 @@ export default function EncodeGrades() {
     // CHANGED: Search using both courseCode and course_code
     const enrollment = gradesData.find(
       item => item.student_id === studentId && 
-             (item.courseCode === courseCode || item.course_code === courseCode)
+             (item.courseCode === courseCode)
     );
 
     console.log('Enrollment found:', enrollment);
@@ -114,7 +114,7 @@ export default function EncodeGrades() {
       setGradesData((prev) =>
         prev.map((item) =>
           item.student_id === studentId && 
-          (item.courseCode === courseCode || item.course_code === courseCode) && 
+          (item.courseCode === courseCode) && 
           item.section === enrollment.section
             ? { 
                 ...item, 

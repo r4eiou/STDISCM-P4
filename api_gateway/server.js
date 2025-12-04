@@ -170,7 +170,6 @@ app.get('/view-grades/:accountId', (req, res) => {
   });
 });
 
-// Add after the view grades client setup
 
 // ENCODE GRADES gRPC client
 const encodeGradePackageDef = protoLoader.loadSync("./proto/encode_grade.proto");
@@ -178,7 +177,7 @@ const encodeGradeGrpcObj = grpc.loadPackageDefinition(encodeGradePackageDef);
 const EncodeGradeClient = encodeGradeGrpcObj.encode_grade.EncodeGradeService;
 
 const encodeGradeClient = new EncodeGradeClient(
-  "172.20.0.5:5004",
+  "172.20.0.6:5005",
   grpc.credentials.createInsecure()
 );
 

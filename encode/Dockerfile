@@ -7,4 +7,4 @@ RUN npm install
 
 COPY . .
 
-CMD ["node", "view_grade-server.js"]
+CMD ["node", "encode_grade-server.js"]
