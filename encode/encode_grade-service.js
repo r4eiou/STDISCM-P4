@@ -118,6 +118,13 @@ export async function getStudentsByFaculty(call, callback) {
         }))
         };
 
+    // Sort results
+    response.students.sort((a, b) => {
+      if (a.studentId !== b.studentId) return a.studentId - b.studentId;
+      if (a.courseCode !== b.courseCode) return a.courseCode.localeCompare(b.courseCode);
+      return a.section.localeCompare(b.section);
+    });
+
     console.log('=== Final response ===');
     console.log('Total students:', response.students.length);
     console.log('Sample:', response.students[0]);

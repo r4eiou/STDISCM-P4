@@ -68,6 +68,15 @@ export async function getOfferings(call, callback) {
       })),
     };
 
+    // Sort results
+    response.offerings.sort((a, b) => {
+      if (a.courseCode !== b.courseCode)
+        return a.courseCode.localeCompare(b.courseCode);
+
+      if (a.sectionNumber !== b.sectionNumber)
+        return a.sectionNumber.localeCompare(b.sectionNumber);
+    });
+
     callback(null, response);
   } catch (err) {
     console.error("getOfferings error:", err);
