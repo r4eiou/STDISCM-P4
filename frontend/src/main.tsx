@@ -12,6 +12,9 @@ import ViewGrades from "./components/ViewGrades.tsx";
 import EnrollCourses from "./components/EnrollCourses.tsx";
 import EncodeGrades from "./components/EncodeGrades.tsx";
 
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 const router = createBrowserRouter([
   {
     element: <Layout />,
@@ -31,6 +34,7 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <AccountProvider>
         <RouterProvider router={router}></RouterProvider>
+        <ToastContainer position="top-right" autoClose={5000} aria-label="notification"/>
       </AccountProvider>
     </ThemeProvider>
   </StrictMode>

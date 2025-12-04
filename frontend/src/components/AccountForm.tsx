@@ -17,6 +17,7 @@ import { type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "@/AccountContext";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const accountFormSchema = z.object({
   accountType: z.enum(["student", "faculty"], {
@@ -74,6 +75,7 @@ export default function AccountForm() {
             email: result.user.email,
           });
 
+          toast.success("Login successful!");
           setLoginError(null);
           navigate("/dashboard");
 
