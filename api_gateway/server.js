@@ -22,7 +22,7 @@ app.use(cors({
 app.use(express.json());
 
 // LOGIN gRPC client
-const packageDef = protoLoader.loadSync("./login/proto/login.proto");
+const packageDef = protoLoader.loadSync("./proto/login.proto");
 const grpcObj = grpc.loadPackageDefinition(packageDef);
 const LoginClient = grpcObj.login.LoginService;
 
@@ -60,7 +60,7 @@ app.post('/login', (req, res) => {
 });
 
 // VIEW COURSES gRPC client
-const coursesPackageDef = protoLoader.loadSync("./courses/proto/view_course.proto");
+const coursesPackageDef = protoLoader.loadSync("./proto/view_course.proto");
 const coursesGrpcObj = grpc.loadPackageDefinition(coursesPackageDef);
 const ViewCoursesClient = coursesGrpcObj.view_courses.ViewCoursesService;
 
@@ -81,7 +81,7 @@ app.get('/view-courses', (req, res) => {
 });
 
 // ENROLL gRPC client
-const enrollPackageDef = protoLoader.loadSync('./enroll/proto/enroll.proto');
+const enrollPackageDef = protoLoader.loadSync('./proto/enroll.proto');
 const enrollGrpcObj = grpc.loadPackageDefinition(enrollPackageDef);
 const EnrollClient = enrollGrpcObj.enroll.EnrollService;
 
@@ -148,7 +148,7 @@ app.post('/enroll', (req, res) => {
 });
 
 // VIEW GRADES gRPC client
-const gradesPackageDef = protoLoader.loadSync("./grade/proto/view_grade.proto");
+const gradesPackageDef = protoLoader.loadSync("./proto/view_grade.proto");
 const gradesGrpcObj = grpc.loadPackageDefinition(gradesPackageDef);
 const ViewGradesClient = gradesGrpcObj.view_grade.ViewGradeService;
 

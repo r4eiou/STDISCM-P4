@@ -2,14 +2,14 @@ version: '3.9'
 
 services:
   api_gateway:
-    build: .
+    build: ./api_gateway
     container_name: api_gateway
     networks:
       my-network:
         ipv4_address: 172.20.0.8
 
   api_gateway_backup:
-    build: .
+    build: ./api_gateway
     container_name: api_gateway_backup
     networks:
       my-network:
