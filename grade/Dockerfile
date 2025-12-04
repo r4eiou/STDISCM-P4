@@ -1,13 +1,10 @@
-FROM node:24
+FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
 
-EXPOSE 5004
-
-CMD ["node", "view_grade-server.js"]
+CMD ["node", "grade-server.js"]

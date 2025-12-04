@@ -170,6 +170,51 @@ app.get('/view-grades/:accountId', (req, res) => {
   });
 });
 
+// Add after the view grades client setup
+
+// ENCODE GRADES gRPC client
+const encodeGradePackageDef = protoLoader.loadSync("./proto/encode_grade.proto");
+const encodeGradeGrpcObj = grpc.loadPackageDefinition(encodeGradePackageDef);
+const EncodeGradeClient = encodeGradeGrpcObj.encode_grade.EncodeGradeService;
+
+const encodeGradeClient = new EncodeGradeClient(
+  "172.20.0.5:5004",
+  grpc.credentials.createInsecure()
+);
+
+// Get students for faculty endpoint
+app.get('/encode-grades/:facultyId', (req, res) => {
+  const { facultyId } = req.params;
+  
+  console.log('Fetching encode grades for facultyId:', facultyId);
+
+  encodeGradeClient.GetStudentsByFaculty({ facultyId }, (err, response) => {
+    if (err) {
+      console.error("Encode Grades gRPC Error:", err);
+      return res.status(500).json({ error: 'Encode Grades server down!' });
+    }
+    
+    console.log('Encode grades response:', response);
+    res.json(response.students);
+  });
+});
+
+// Upload grade endpoint
+app.post('/upload-grade', (req, res) => {
+  const { studentId, courseCode, section, grade, facultyId } = req.body;
+
+  encodeGradeClient.UploadGrade(
+    { studentId, courseCode, section, grade, facultyId },
+    (err, response) => {
+      if (err) {
+        console.log("Upload grade failed!");
+        return res.status(500).json({ error: 'Failed to upload grade' });
+      }
+      res.json(response);
+    }
+  );
+});
+
 
 // ADD other feature gRPC clients and endpoints here
 

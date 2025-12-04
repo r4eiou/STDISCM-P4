@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package encode_grade;
+
+service EncodeGradeService {
+  rpc GetStudentsByFaculty(GetStudentsRequest) returns (GetStudentsResponse);
+  rpc UploadGrade(UploadGradeRequest) returns (UploadGradeResponse);
+}
+
+message GetStudentsRequest {
+  string facultyId = 1;
+}
+
+message StudentCourse {
+  int32 studentId = 1;
+  string studentName = 2;
+  string studentEmail = 3;
+  string courseCode = 4;
+  string courseTitle = 5;
+  string section = 6;
+  double currentGrade = 7;
+  string status = 8;
+}
+
+message GetStudentsResponse {
+  repeated StudentCourse students = 1;
+}
+
+message UploadGradeRequest {
+  int32 studentId = 1;
+  string courseCode = 2;
+  string section = 3;
+  double grade = 4;
+  string facultyId = 5;
+}
+
+message UploadGradeResponse {
+  bool success = 1;
+  string message = 2;
+}
