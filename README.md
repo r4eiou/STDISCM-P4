@@ -1,6 +1,44 @@
 # STDISCM-P4
 Distributed Fault Tolerance
 
+## docker-compose.yml
+
+### 1. Create a docker network (only once):
+```bash
+    docker network create --subnet 172.20.0.0/16 my-network
+```
+
+### 2. Run docker-compose file:
+```bash
+    docker-compose up -d
+```
+
+### 3. If there are changes in the code, rebuild and start again:
+```bash
+    docker-compose down
+    docker-compose up --build
+```
+
+### 4. If you only need to restart without rebuilding
+```bash
+    docker-compose restart
+```
+
+### 5. To simulate a server going up or down
+- Using Docker Desktop, click Stop or Start on a container.<br>
+- Or use the CLI:<br>
+```bash
+    docker-compose stop <container_name>
+    docker-compose start <container_name>
+```
+
+### 6. Remove volumes if needed (Optional) 
+```bash
+    docker-compose down -v
+```
+
+## MANUAL RUN
+
 ### 1. Create a docker network
 Open a terminal:
 
