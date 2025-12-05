@@ -15,9 +15,9 @@ server.addService(encodeGradePackage.EncodeGradeService.service, {
 });
 
 server.bindAsync(
-  '0.0.0.0:5005',
+  'encode_server:5005',
   grpc.ServerCredentials.createInsecure(),
   () => {
-    console.log('gRPC Grade Faculty Service (Encode) running on port 5004');
+    console.log('gRPC Grade Faculty Service (Encode) running on port 5005');
   }
 );

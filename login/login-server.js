@@ -9,7 +9,7 @@ const loginPackage = grpcObj.login;
 const server = new grpc.Server();
 server.addService(loginPackage.LoginService.service, { Login: login });
 server.bindAsync(
-  "0.0.0.0:5001",
+  "login_server:5001",
   grpc.ServerCredentials.createInsecure(),
   () => {
     console.log("gRPC Login Service running on port 5001");

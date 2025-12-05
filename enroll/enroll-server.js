@@ -13,7 +13,7 @@ server.addService(enrollPackage.EnrollService.service, {
 });
 
 server.bindAsync(
-  '0.0.0.0:5003',
+  'enroll_server:5003',
   grpc.ServerCredentials.createInsecure(),
   () => console.log('gRPC Enroll Service running on port 5003')
 );
