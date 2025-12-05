@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package view_grade;
+
+service ViewGradeService {
+  rpc GetGrade (ViewGradeRequest) returns (ViewGradeResponse);
+}
+
+message ViewGradeRequest {
+  string accountId = 1; // Supabase account_id
+}
+
+message Grade {
+  string courseCode = 1;
+  string courseTitle = 2;
+  string section = 3;
+  double grade = 4;
+  string status = 5;
+}
+
+message ViewGradeResponse {
+  repeated Grade grades = 1;
+}

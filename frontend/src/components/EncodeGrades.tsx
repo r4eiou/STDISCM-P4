@@ -3,81 +3,161 @@ import GradesTable from "./GradesTable.tsx";
 import { getColumnsForAccountType } from "../lib/grades/getColumnsForAccountType.tsx";
 import { useMemo } from "react";
 import { useAccount } from "@/AccountContext.tsx";
-import { generateAllData } from "@/data/sampleData";
 import { type StudentGrade } from "../lib/grades/getColumnsForAccountType.tsx";
-import { toast } from "sonner";
+// import { toast } from "sonner";
+import { toast } from "react-toastify";
+import { fetchWithTimeout } from "@/lib/utils.ts";
 
 export default function EncodeGrades() {
   const [loading, setLoading] = useState(false);
   const { accountType, accountId } = useAccount();
   const [grades, setGrades] = useState<Record<string, string>>({});
   const [gradesData, setGradesData] = useState<StudentGrade[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     setLoading(true);
-  //     const response = await fetch('/api/grades');
-  //     const result = await response.json();
-  //     setData(result);
-  //     setLoading(false);
-  //   }
-  //   fetchData();
-  // }, []);
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    const { students, grades, courses } = generateAllData();
+    if (!accountId || accountType !== 'faculty') return;
 
-    const filteredGrades = (() => {
-      if (accountType === "student" && accountId) {
-        return grades.filter((grade) => grade.student_id === accountId);
-      } else if (accountType === "faculty" && accountId) {
-        return grades.filter((grade) => grade.faculty_id === accountId);
+    let isMounted = true;
+
+    const fetchGradesData = async () => {
+      try {
+        const response = await fetchWithTimeout(`${BASE_URL}/encode-grades/${accountId}`);
+
+        if (!response.ok) {
+          throw new Error("Encode Grades service is currently unavailable");
+        }
+
+        const result = await response.json();
+
+        const enhancedGrades: StudentGrade[] = result.map((item: any) => ({
+          student_id: item.studentId,
+          studentName: item.studentName,
+          studentEmail: item.studentEmail,
+          courseCode: item.courseCode,
+          courseTitle: item.courseTitle,
+          section: item.section,
+          grade: item.currentGrade,
+          status: item.status
+        }));
+
+        if (isMounted) {
+          setGradesData(enhancedGrades);
+          setError(null);
+          toast.success("Grades loaded successfully");
+          setLoading(false);
+        }
+
+      } catch (error) {
+        console.error("Error fetching grades:", error);
+        if (isMounted) {
+          setError("Service unavailable. Retrying...");
+          setLoading(false);
+        }
+        // Retry after 5 seconds
+        setTimeout(fetchGradesData, 5000);
       }
-      return grades;
-    })();
+    };
 
-    const enhancedGrades: StudentGrade[] = filteredGrades.map((grade) => {
-      const student = students.find((s) => s.student_id === grade.student_id);
-      const course = courses.find((c) => c.course_code === grade.course_code);
+    fetchGradesData();
 
-      return {
-        ...grade,
-        studentName: `${student?.firstname} ${student?.lastname}`,
-        studentLastName: student?.lastname || "",
-        studentEmail: student?.email || "",
-        courseTitle: course?.title || "",
-      };
-    });
+    return () => {
+      isMounted = false; // cleanup flag
+    };
+  }, [accountId, accountType, BASE_URL]);
 
-    setGradesData(enhancedGrades);
-  }, [accountType, accountId]);
-
-  const handleSubmitGrade = (
+  const handleSubmitGrade = async (
     studentId: number,
     courseCode: string,
     grade: string
   ) => {
-    setGradesData((prev) =>
-      prev.map((item) =>
-        item.student_id === studentId && item.course_code === courseCode
-          ? { ...item, grade: parseFloat(grade) }
-          : item
-      )
-    );
+    console.log('=== handleSubmitGrade called ===');
+    console.log('studentId:', studentId);
+    console.log('courseCode:', courseCode);
+    console.log('grade:', grade);
+    console.log('accountId:', accountId);
+    console.log('All grades data:', gradesData); // ADD THIS to see the structure
 
-    // Clear previous selection
-    setGrades((prev) => {
-      const newGrades = { ...prev };
-      delete newGrades[`${studentId}-${courseCode}`];
-      return newGrades;
-    });
+    try {
+      // Find the section for this enrollment
+      // CHANGED: Search using both courseCode and course_code
+      const enrollment = gradesData.find(
+        item => item.student_id === studentId && 
+              (item.courseCode === courseCode)
+      );
 
-    toast("Grade updated successfully", {
-      description: `Grade ${grade} has been recorded for student ${studentId} in ${courseCode}.`,
-      duration: 3000,
-    });
+      console.log('Enrollment found:', enrollment);
 
-    // API call here
+      if (!enrollment) {
+        toast.error("Enrollment not found");
+        return;
+      }
+
+      const payload = {
+        studentId,
+        courseCode,
+        section: enrollment.section,
+        grade: parseFloat(grade),
+        facultyId: accountId
+      };
+
+      console.log('Sending payload:', payload);
+
+      const response = await fetch(`${BASE_URL}/upload-grade`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      console.log('Response status:', response.status);
+      
+      const result = await response.json();
+      console.log('Response data:', result);
+
+      if (response.ok && result.success) {
+        // Use 'completed' for graded courses
+        let newStatus = 'ongoing';
+        const gradeNum = parseFloat(grade);
+        if (gradeNum >= 1.0 && gradeNum <= 5.0) {
+          newStatus = 'completed';
+        }
+
+        // Update local state - check both courseCode and course_code
+        setGradesData((prev) =>
+          prev.map((item) =>
+            item.student_id === studentId && 
+            (item.courseCode === courseCode) && 
+            item.section === enrollment.section
+              ? { 
+                  ...item, 
+                  grade: parseFloat(grade),
+                  status: newStatus
+                }
+              : item
+          )
+        );
+
+        // Clear selection
+        setGrades((prev) => {
+          const newGrades = { ...prev };
+          delete newGrades[`${studentId}-${courseCode}-${enrollment.section}`];
+          return newGrades;
+        });
+
+        // toast.success("Grade uploaded successfully", {
+        //   description: `Grade ${grade} recorded. Status: ${newStatus}`,
+        // });
+        toast.success(`Grade ${grade} recorded. Status: ${newStatus}`);
+      } else {
+        console.error('Upload failed:', result);
+        toast.error(result.message || "Failed to upload grade");
+      }
+    } catch (error) {
+      console.error('Error uploading grade:', error);
+      toast.error("Encode Grades service is unavailable");
+    }
   };
 
   const columns = useMemo(
@@ -91,9 +171,20 @@ export default function EncodeGrades() {
     [accountType, grades]
   );
 
+  // display error message
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">Loading...</div>
+      <div className="text-gray-600 m-2">Loading grades data...</div>
+    );
+  }
+  if (error) return <div className="text-red-600 m-2">{error}</div>;
+
+  if (gradesData.length === 0 && !loading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64 gap-4">
+        <span className="text-2xl font-bold">Encode Grades</span>
+        <span className="text-muted-foreground">No students enrolled in your courses yet.</span>
+      </div>
     );
   }
 

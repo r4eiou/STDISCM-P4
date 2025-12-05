@@ -17,6 +17,8 @@ import { type SubmitHandler } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useAccount } from "@/AccountContext";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { fetchWithTimeout } from "@/lib/utils.ts";
 
 const accountFormSchema = z.object({
   accountType: z.enum(["student", "faculty"], {
@@ -45,12 +47,13 @@ export default function AccountForm() {
     resolver: zodResolver(accountFormSchema),
   });
 
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const onSubmit: SubmitHandler<AccountFormFields> = async (data) => {
     const attemptLogin = async () => {
       setLoginError(null);
       
       try {
-        const res = await fetch("http://localhost:4000/login", {
+        const res = await fetchWithTimeout(`${BASE_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -73,6 +76,7 @@ export default function AccountForm() {
             email: result.user.email,
           });
 
+          toast.success("Login successful!");
           setLoginError(null);
           navigate("/dashboard");
 

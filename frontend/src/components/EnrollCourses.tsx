@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAccount } from "@/AccountContext";
 import CourseCard from "./CourseCard";
+import { fetchWithTimeout } from "@/lib/utils.ts";
+
+import { toast } from "react-toastify";
 
 interface Offering {
   // courseId: number;
@@ -15,6 +18,7 @@ interface Offering {
   instructor: string;
 }
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function EnrollCourses() {
   const [offerings, setOfferings] = useState<Offering[]>([]);
   const [enrollments, setEnrollments] = useState<string[]>([]);
@@ -24,56 +28,43 @@ export default function EnrollCourses() {
   const { accountId } = useAccount();
 
   useEffect(() => {
-    let isMounted = true;
-    
-    const fetchOfferings = async () => {
-      try {
-        const res = await fetch("http://localhost:4000/enroll-courses");
-        if (!res.ok) throw new Error("Service unavailable");
-        const data = await res.json();
-
-        if (isMounted) {
-          setOfferings(data);
-          setLoading(false);
-          setError(null);
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load offerings");
-
-        if (isMounted) {
-          setError("Service unavailable. Retrying...");
-          setLoading(false);
-        }
-        // Retry after 5 seconds
-        setTimeout(fetchOfferings, 5000);
-      }
-    };
-
-    fetchOfferings();
-  }, []);
-
-  useEffect(() => {
     if (!accountId) return;
+    let isMounted = true;
 
-    const fetchEnrollments = async () => {
+    const fetchAll = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/student-enrollments/${accountId}`);
-        const data = await res.json();
+        // Fetch offerings
+        const offeringsRes = await fetchWithTimeout(`${BASE_URL}/enroll-courses`);
+        if (!offeringsRes.ok) throw new Error("Offerings service unavailable");
+        const offeringsData = await offeringsRes.json();
 
-        setEnrollments(data.map((e: any) => `${e.course_code}-${e.section}`));
+        // Fetch current enrollments
+        const enrollRes = await fetchWithTimeout(`${BASE_URL}/student-enrollments/${accountId}`);
+        if (!enrollRes.ok) throw new Error("Enrollments service unavailable");
+        const enrollData = await enrollRes.json();
+
+        if (isMounted) {
+          setOfferings(offeringsData);
+          setEnrollments(enrollData.map((e: any) => `${e.course_code}-${e.section}`));
+          setError(null);
+          setLoading(false);
+        }
       } catch (err) {
         console.error(err);
+        if (isMounted) setError("Service unavailable. Retrying...");
+        setTimeout(fetchAll, 5000); // retry both
       }
     };
 
-    fetchEnrollments();
+    fetchAll();
+
+    return () => { isMounted = false; };
   }, [accountId]);
 
 
   const handleEnroll = async (courseCode: string, section: string) => {
     try {
-      const res = await fetch("http://localhost:4000/enroll", {
+      const res = await fetch(`${BASE_URL}/enroll`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -83,16 +74,15 @@ export default function EnrollCourses() {
         }),
       });
       const data = await res.json();
-      alert(data.message);
 
       if (data.success) {
+        toast.success("Enrollment successful!");
         setEnrollments(prev => {
           if (!prev.includes(`${courseCode}-${section}`)) {
             return [...prev, `${courseCode}-${section}`];
           }
           return prev;
         });
-
 
         setOfferings(prev =>
           prev.map(o =>
@@ -101,10 +91,12 @@ export default function EnrollCourses() {
               : o
           )
         );
+      } else {
+        toast.error(data.message || "Enrollment failed!");
       }
     } catch (err) {
       console.error(err);
-      alert("Enrollment failed");
+      toast.error("Enrollment failed: system down");
     }
   };
 

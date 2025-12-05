@@ -10,7 +10,7 @@ const server = new grpc.Server();
 server.addService(coursePackage.ViewCoursesService.service, { GetCourses: getCourses });
 
 server.bindAsync(
-  '0.0.0.0:5002',
+  'courses_server:5002',
   grpc.ServerCredentials.createInsecure(),
   () => {
     console.log('gRPC ViewCourses Service running on port 5002');

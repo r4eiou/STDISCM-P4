@@ -10,9 +10,9 @@ const server = new grpc.Server();
 server.addService(coursePackage.ViewGradeService.service, { GetGrade: getGrade });
 
 server.bindAsync(
-  '0.0.0.0:5004',
+  'grade_server:5004',
   grpc.ServerCredentials.createInsecure(),
   () => {
-    console.log('gRPC ViewCourses Service running on port 5004');
+    console.log('gRPC ViewGrades Service running on port 5004');
   }
 );

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package enroll;
+
+// Request to enroll a student
+message EnrollRequest {
+  string studentId = 1; // or email if you prefer
+  string courseCode = 2;
+  string section = 3;
+}
+
+// Response for enrollment
+message EnrollResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Request to get available offerings
+message GetOfferingsRequest {}
+
+message Offering {
+  int32 courseId = 1;
+  string courseCode = 2;
+  string courseName = 3;
+  string title = 4;
+  string description = 5;
+  string sectionNumber = 6;
+  string time = 7;
+  int32 remainingSlots = 8;
+  int32 maxSlots = 9;
+  string instructor = 10;
+}
+
+message GetOfferingsResponse {
+  repeated Offering offerings = 1;
+}
+
+message GetEnrollmentsRequest {
+  string studentId = 1;
+}
+
+message GetEnrollmentsResponse {
+  repeated Enrollment enrollments = 1;
+}
+
+message Enrollment {
+  string courseCode = 1;
+  string section = 2;
+}
+
+// Service
+service EnrollService {
+  rpc GetOfferings(GetOfferingsRequest) returns (GetOfferingsResponse);
+  rpc Enroll(EnrollRequest) returns (EnrollResponse);
+  rpc GetStudentEnrollments(GetEnrollmentsRequest) returns (GetEnrollmentsResponse);
+}
