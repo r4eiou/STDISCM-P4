@@ -9,10 +9,10 @@
 <h3 align="center">Shiz University (STDISCM-P4 Final Project)</h3>
 
   <p align="center">
-    A fault-tolerant web-based enrollment system with containerized microservices communicating via REST API 
+    A fault-tolerant web-based enrollment system with containerized microservices communicating via REST API and gRPC
     <br />
     <br />
-    <a href="#">View Demo</a>
+    <a href="https://youtu.be/h1Xx22jENek">View Demo</a>
   </p>
 </div>
 
